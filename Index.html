@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>AESA - Portal de Gestión</title>
+  <?!= HtmlService.createHtmlOutputFromFile('Styles').getContent(); ?>
+</head>
+
+<body class="bg-gray-50 text-aesa-text font-display m-0 p-0 min-h-screen flex flex-col">
+
+  <!-- Loading Screen -->
+  <div id="loadingOverlay"
+    class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
+    <h2 class="text-center text-aesa-dark text-xl font-semibold">Cargando Portal...</h2>
+    <p class="w-1/3 text-center text-gray-500 text-sm mt-2">Obteniendo documentos más recientes</p>
+  </div>
+
+  <header
+    class="bg-white text-aesa-dark shadow-sm border-b-4 border-aesa-blue sticky top-0 z-50 transition-shadow duration-300"
+    id="mainHeader">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 md:h-20 flex flex-row items-center justify-between gap-4">
+
+      <!-- Logo Container -->
+      <div class="flex items-center gap-3 md:gap-4 cursor-pointer shrink-0 group select-none" onclick="showDashboard()">
+        <img src="https://www.aesa.com.pe/wp-content/uploads/2022/08/cropped-LogoAesa-1024x348.png" alt="AESA"
+          class="h-8 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+
+        <div class="w-px h-8 md:h-12 bg-gray-200 group-hover:bg-aesa-blue/50 transition-colors duration-300"></div>
+
+        <div class="flex flex-col justify-center">
+          <span
+            class="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-[0.2em] leading-tight group-hover:text-aesa-blue transition-colors duration-300">Portal
+            de</span>
+          <span
+            class="text-sm md:text-xl font-bold font-condensed text-aesa-dark leading-none uppercase tracking-wide group-hover:text-black transition-colors duration-300">Gestión
+            Documental</span>
+        </div>
+      </div>
+
+      <!-- Search Trigger (Header) -->
+      <div class="flex items-center justify-end flex-1">
+        <button onclick="openSearch()"
+          class="bg-gray-100 hover:bg-gray-200 text-aesa-dark p-2 rounded-full transition-colors flex items-center justify-center shrink-0">
+          <span class="material-icons">search</span>
+        </button>
+      </div>
+
+
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
+
+    <!-- Hero Section (Comunicados - Carousel) - Always Visible -->
+    <section id="heroSection"
+      class="hidden relative rounded-xl overflow-hidden shadow-xl bg-aesa-dark group h-48 md:h-64">
+      <!-- Carousel items Injected via JS -->
+      <div id="carouselContainer" class="w-full h-full relative"></div>
+      <!-- Carousel Indicators -->
+      <div id="carouselIndicators" class="absolute bottom-4 right-4 flex gap-2 z-30"></div>
+    </section>
+
+    <!-- VIEW: Dashboard (Category Buttons) -->
+    <div id="dashboardView" class="hidden">
+      <div class="flex items-end gap-2 mb-4">
+        <h2
+          class="text-xl font-bold font-condensed text-aesa-dark uppercase tracking-wide border-l-4 border-aesa-blue pl-3">
+          Explorar por Categorías
+        </h2>
+      </div>
+      <div id="categoryButtonsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- VIEW: Detail (Cards List) -->
+    <div id="detailView" class="hidden">
+      <!-- Navigation Breadcrumb / Back -->
+      <div class="flex items-center gap-4 mb-6">
+        <button onclick="showDashboard()"
+          class="flex items-center gap-1 text-gray-500 hover:text-aesa-blue transition-colors font-medium text-sm bg-white px-3 py-1.5 rounded-md border border-gray-300 hover:border-aesa-blue shadow-sm">
+          <span class="material-icons text-sm">arrow_back</span>
+          Volver
+        </button>
+        <h2 id="currentCategoryTitle" class="text-2xl font-bold font-condensed text-aesa-dark uppercase tracking-wide">
+          <!-- Updated via JS -->
+        </h2>
+      </div>
+
+      <!-- Cards Grid -->
+      <div id="cardsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="hidden flex flex-col items-center justify-center py-20">
+      <span class="material-icons text-6xl text-gray-300 mb-4 text-aesa-blue">folder_off</span>
+      <h3 class="text-xl font-bold text-gray-600">No se encontraron documentos</h3>
+      <p class="text-gray-500">Intenta con otros términos de búsqueda.</p>
+      <button onclick="showDashboard()" class="mt-4 text-aesa-blue font-bold text-sm hover:underline">Ver todas las
+        categorías</button>
+    </div>
+
+  </main>
+
+  <!-- Modal -->
+  <div id="modal"
+    class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[60] hidden transition-opacity duration-300 backdrop-blur-sm">
+    <div
+      class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 overflow-hidden relative transform transition-transform duration-300 scale-95"
+      id="modalContainer">
+      <!-- Modal Header -->
+      <div class="bg-aesa-blue px-6 py-4 flex items-center gap-4">
+        <h3 id="modalTitle" class="text-white text-xl font-bold font-condensed flex-grow leading-tight">Título del
+          Documento</h3>
+
+        <a id="modalLink" href="#" target="_blank"
+          class="hidden items-center gap-1.5 text-aesa-blue bg-white hover:bg-gray-50 px-3 py-1 rounded-full text-[10px] font-bold transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 uppercase tracking-wide whitespace-nowrap group">
+          <span class="material-icons text-xs group-hover:rotate-12 transition-transform">visibility</span>
+          CLICK AQUI<br>PARA VER
+        </a>
+
+        <button id="closeModal"
+          class="text-white hover:bg-black/20 rounded-full p-1 transition-colors flex items-center justify-center shrink-0">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Content -->
+      <!-- Modal Content Wrapper -->
+      <div class="flex flex-col max-h-[85vh]">
+
+
+
+        <!-- Scrollable Content -->
+        <div class="overflow-y-auto">
+          <img id="modalImage" src="" alt="Imagen detalle" class="w-full h-48 sm:h-64 object-cover hidden">
+
+          <div class="p-6 space-y-4">
+            <!-- Date -->
+            <div class="flex items-center gap-2 text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">
+              <span class="material-icons text-sm">calendar_today</span>
+              <span id="modalDate">...</span>
+            </div>
+
+            <!-- Description -->
+            <div>
+              <h4 class="text-sm font-bold text-aesa-dark uppercase tracking-wide mb-2">Descripción</h4>
+              <div class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                <p id="modalDescription" class="text-gray-600 text-sm leading-relaxed"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <!-- Search Overlay -->
+  <div id="searchOverlay"
+    class="fixed inset-0 bg-aesa-dark/95 z-[70] hidden transition-opacity duration-300 backdrop-blur-sm flex flex-col pt-6 px-4">
+
+    <div class="w-full max-w-4xl mx-auto flex flex-col h-full">
+      <!-- Header: Search Input & Close -->
+      <div class="flex items-center gap-4 mb-8 shrink-0">
+        <div class="relative flex-grow">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-4">
+            <span class="material-icons text-gray-400 text-3xl">search</span>
+          </span>
+          <input type="text" id="searchInput" placeholder="Buscar documento..."
+            class="w-full pl-14 pr-6 py-4 bg-white/10 border-2 border-white/20 text-white placeholder-gray-400 rounded-2xl focus:outline-none focus:border-aesa-blue focus:bg-white/20 text-xl transition-all shadow-2xl backdrop-blur-md">
+        </div>
+        <button onclick="closeSearch()"
+          class="text-white/70 hover:text-white rounded-full p-2 transition-colors shrink-0 bg-white/10 hover:bg-white/20">
+          <span class="material-icons text-3xl">close</span>
+        </button>
+      </div>
+
+      <!-- Inline Search Results -->
+      <div id="searchResultsOverlay"
+        class="flex-grow overflow-y-auto custom-scrollbar pb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 content-start">
+        <!-- Results injected here -->
+        <div class="col-span-full text-center text-gray-500 mt-20">
+          <span class="material-icons text-6xl mb-4 opacity-50 text-aesa-blue">manage_search</span>
+          <p class="text-xl">Escribe para comenzar a buscar...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <?!= HtmlService.createHtmlOutputFromFile('JavaScript').getContent(); ?>
+</body>
+
+</html>

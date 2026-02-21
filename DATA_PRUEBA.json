@@ -1,0 +1,104 @@
+[
+  {
+    "ID": 101,
+    "TITULO": "Nuevos Protocolos de Seguridad 2026",
+    "DESCRIPCION_CORTA": "Actualización obligatoria de los estándares de seguridad para todas las unidades mineras.",
+    "DESCRIPCION_LARGA": "Se detallan los cambios en los EPP requeridos y los nuevos procedimientos de ingreso a mina. Todos los colaboradores deben revisar este documento antes del 20 de Febrero.",
+    "CATEGORIA": "Comunicado",
+    "FECHA": "2026-02-15T08:00:00.000Z",
+    "LINK_FOTO": "https://images.unsplash.com/photo-1581094794329-cd1361d78326?auto=format&fit=crop&q=80&w=1200&h=500",
+    "LINK_INFORMACION": "#",
+    "ORDEN": 1,
+    "ESTADO": "Activo"
+  },
+  {
+    "ID": 102,
+    "TITULO": "Campaña de Salud Ocupacional",
+    "DESCRIPCION_CORTA": "Inicio de exámenes médicos anuales y vacunación contra la influenza.",
+    "DESCRIPCION_LARGA": "El área médica informa el cronograma de exámenes anuales. Por favor verificar su turno en el portal del empleado.",
+    "CATEGORIA": "Comunicado",
+    "FECHA": "2026-02-14T10:30:00.000Z",
+    "LINK_FOTO": "https://images.unsplash.com/photo-1576091160550-2187d80018fd?auto=format&fit=crop&q=80&w=1200&h=500",
+    "LINK_INFORMACION": "#",
+    "ORDEN": 2,
+    "ESTADO": "Activo"
+  },
+  {
+    "ID": 103,
+    "TITULO": "Mantenimiento Programado de Chimeneas",
+    "DESCRIPCION_CORTA": "Suspensión de actividades en el sector 4 por mantenimiento de ventilación.",
+    "DESCRIPCION_LARGA": "Se realizarán trabajos de mantenimiento mayor en los sistemas de ventilación principal. Acceso restringido.",
+    "CATEGORIA": "Comunicado",
+    "FECHA": "2026-02-10T14:00:00.000Z",
+    "LINK_FOTO": "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=1200&h=500",
+    "LINK_INFORMACION": "#",
+    "ORDEN": 3,
+    "ESTADO": "Activo"
+  },
+  {
+    "ID": 201,
+    "TITULO": "Procedimiento de Trabajo Seguro en Altura",
+    "DESCRIPCION_CORTA": "Lineamientos para el uso de arneses y líneas de vida en trabajos sobre 1.80m.",
+    "CATEGORIA": "PETS",
+    "FECHA": "2026-01-20T00:00:00.000Z",
+    "LINK_FOTO": "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=600&h=300",
+    "LINK_INFORMACION": "#",
+    "ORDEN": 1,
+    "ESTADO": "Activo"
+  },
+  {
+    "ID": 202,
+    "TITULO": "Bloqueo y Etiquetado (Lockout/Tagout)",
+    "DESCRIPCION_CORTA": "Pasos críticos para el aislamiento de energía antes del mantenimiento.",
+    "CATEGORIA": "PETS",
+    "FECHA": "2026-01-22T00:00:00.000Z",
+    "LINK_FOTO": "https://images.unsplash.com/photo-1581092921461-eab62e47a71e?auto=format&fit=crop&q=80&w=600&h=300",
+    "LINK_INFORMACION": "#",
+    "ORDEN": 2,
+    "ESTADO": "Activo"
+  },
+  {
+    "ID": 301,
+    "TITULO": "Estándar de EPP Básico",
+    "DESCRIPCION_CORTA": "Especificaciones técnicas para casco, lentes, zapatos y chaleco reflectivo.",
+    "CATEGORIA": "Estándares",
+    "FECHA": "2025-12-15T00:00:00.000Z",
+    "LINK_FOTO": "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?auto=format&fit=crop&q=80&w=600&h=300",
+    "LINK_INFORMACION": "#",
+    "ORDEN": 10,
+    "ESTADO": "Activo"
+  },
+  {
+    "ID": 302,
+    "TITULO": "Código de Colores de Tuberías",
+    "DESCRIPCION_CORTA": "Norma técnica para la identificación de fluidos en tuberías industriales.",
+    "CATEGORIA": "Estándares",
+    "FECHA": "2025-11-10T00:00:00.000Z",
+    "LINK_FOTO": "https://images.unsplash.com/photo-1535136898857-e6f3dfad51c3?auto=format&fit=crop&q=80&w=600&h=300",
+    "LINK_INFORMACION": "#",
+    "ORDEN": 11,
+    "ESTADO": "Activo"
+  },
+  {
+    "ID": 401,
+    "TITULO": "Matriz IPERC Línea Amarilla",
+    "DESCRIPCION_CORTA": "Identificación de peligros en operación de maquinaria pesada.",
+    "CATEGORIA": "IPERC",
+    "FECHA": "2026-02-01T00:00:00.000Z",
+    "LINK_FOTO": "https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&q=80&w=600&h=300",
+    "LINK_INFORMACION": "#",
+    "ORDEN": 50,
+    "ESTADO": "Activo"
+  },
+  {
+    "ID": 501,
+    "TITULO": "Inducción General SSOMA",
+    "DESCRIPCION_CORTA": "Material de capacitación obligatoria para nuevos ingresos.",
+    "CATEGORIA": "Capacitación",
+    "FECHA": "2026-01-05T00:00:00.000Z",
+    "LINK_FOTO": "https://images.unsplash.com/photo-1524178232363-1fb2b075b955?auto=format&fit=crop&q=80&w=600&h=300",
+    "LINK_INFORMACION": "#",
+    "ORDEN": 100,
+    "ESTADO": "Activo"
+  }
+]

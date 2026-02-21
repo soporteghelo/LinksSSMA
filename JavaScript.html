@@ -1,0 +1,472 @@
+<script>
+  // --- Config ---
+  const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?auto=format&fit=crop&q=80&w=800"; // Generic Industrial
+
+  // Category Icons Mapping
+  const CATEGORY_ICONS = {
+    'PETS': 'description',
+    'Estándares': 'rule',
+    'IPERC': 'warning_amber',
+    'Capacitación': 'school',
+    'Examen': 'quiz',
+    'Otros': 'folder'
+  };
+
+  // --- State ---
+  let appData = [];
+  let groupedData = {};
+  let carouselInterval;
+  let currentSlide = 0;
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  // --- Initialization ---
+  document.addEventListener('DOMContentLoaded', () => {
+    // Fetch data from Google Apps Script Backend
+    google.script.run
+      .withSuccessHandler(onDataSuccess)
+      .withFailureHandler(onDataFailure)
+      .getActiveData();
+
+    // Event Listeners
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if (e.target.id === 'modal') closeModal();
+    });
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
+  });
+
+  function onDataSuccess(data) {
+    console.log("Data received from backend:", data); // Debugging
+    if (!data || data.length === 0) {
+      console.warn("No data received or empty array.");
+      showEmptyState(true);
+      hideLoader();
+      return;
+    }
+    initApp(data);
+  }
+
+  function onDataFailure(error) {
+    console.error("Error fetching data:", error);
+    hideLoader();
+    const container = document.getElementById('dashboardView'); // Show error effectively
+    container.innerHTML = `<div class="text-center text-red-500 p-8">Error al cargar datos. Por favor recarga la página. <br> ${error.message}</div>`;
+    container.classList.remove('hidden');
+  }
+
+  function initApp(data) {
+    appData = data; // Data is already filtered by 'Activo' in backend
+
+    // Process Data
+    const comunicados = appData.filter(item => item.CATEGORIA === 'Comunicado').sort((a, b) => (Number(a.ORDEN) || 0) - (Number(b.ORDEN) || 0));
+    const others = appData.filter(item => item.CATEGORIA !== 'Comunicado');
+
+    groupedData = groupAndSort(others);
+
+    renderHero(comunicados);
+    renderDashboard(groupedData); // Initial View
+
+    hideLoader();
+  }
+
+  function groupAndSort(data) {
+    const groups = data.reduce((acc, item) => {
+      const cat = item.CATEGORIA || 'Otros';
+      if (!acc[cat]) acc[cat] = [];
+      acc[cat].push(item);
+      return acc;
+    }, {});
+
+    Object.keys(groups).forEach(cat => {
+      groups[cat].sort((a, b) => (Number(a.ORDEN) || 999) - (Number(b.ORDEN) || 999));
+    });
+
+    return groups;
+  }
+
+  // --- Render Functions ---
+
+  function renderHero(items) {
+    const container = document.getElementById('heroSection');
+    const innerContainer = document.getElementById('carouselContainer');
+    const indicators = document.getElementById('carouselIndicators');
+
+    if (!items || items.length === 0) {
+      container.classList.add('hidden');
+      return;
+    }
+
+    container.classList.remove('hidden');
+    innerContainer.innerHTML = '';
+    indicators.innerHTML = '';
+
+    // Render Slides
+    items.forEach((item, index) => {
+      const isHidden = index === 0 ? '' : 'carousel-hidden opacity-0';
+
+      const slide = document.createElement('div');
+      slide.className = `absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${isHidden}`;
+      slide.dataset.index = index;
+      slide.onclick = () => openModal(item);
+
+      slide.innerHTML = `
+                 <div class="relative w-full h-full cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-aesa-dark via-aesa-dark/80 to-transparent z-10"></div>
+                    <img src="${item.LINK_FOTO || FALLBACK_IMAGE}" alt="Comunicado" class="w-full h-full object-cover opacity-60" onerror="this.src='${FALLBACK_IMAGE}'">
+                    
+                    <div class="absolute inset-0 z-20 flex flex-col justify-center px-6 md:px-12 max-w-4xl">
+                        <span class="inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full bg-aesa-blue text-white text-[10px] font-bold uppercase tracking-wider mb-2 shadow-sm animate-pulse">
+                            <span class="material-icons text-[10px]">campaign</span> 
+                            Comunicado
+                        </span>
+                        <h2 class="text-xl md:text-3xl font-bold text-white mb-2 leading-tight font-condensed line-clamp-1">
+                            ${item.TITULO}
+                        </h2>
+                        <p class="text-gray-300 text-xs md:text-sm line-clamp-2 max-w-2xl mb-3">
+                            ${item.DESCRIPCION_CORTA}
+                        </p>
+                        <button class="bg-white text-aesa-dark hover:bg-gray-100 font-bold py-1.5 px-4 rounded text-xs transition-all flex items-center gap-1 shadow-md self-start">
+                            LEER MÁS
+                            <span class="material-icons text-[10px]">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+      innerContainer.appendChild(slide);
+
+      // Indicator
+      const dot = document.createElement('button');
+      dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${index === 0 ? 'bg-aesa-blue w-4' : 'bg-white/50 hover:bg-white'}`;
+      dot.onclick = (e) => {
+        e.stopPropagation();
+        goToSlide(index);
+      };
+      indicators.appendChild(dot);
+    });
+
+    // Start Autoplay
+    if (items.length > 1) {
+      startCarousel(items.length);
+
+      // Swipe Listeners
+      const carousel = document.getElementById('heroSection'); // Swipe on the whole section
+      carousel.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      carousel.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe(items.length);
+      }, { passive: true });
+    }
+  }
+
+  function handleSwipe(total) {
+    const threshold = 50;
+    if (touchEndX < touchStartX - threshold) {
+      // Swipe Left -> Next
+      const next = (currentSlide + 1) % total;
+      goToSlide(next);
+      startCarousel(total); // Reset timer
+    }
+    if (touchEndX > touchStartX + threshold) {
+      // Swipe Right -> Prev
+      const prev = (currentSlide - 1 + total) % total;
+      goToSlide(prev);
+      startCarousel(total); // Reset timer
+    }
+  }
+
+  function startCarousel(total) {
+    if (carouselInterval) clearInterval(carouselInterval);
+    carouselInterval = setInterval(() => {
+      const next = (currentSlide + 1) % total;
+      goToSlide(next);
+    }, 5000); // 5 Seconds Interval
+  }
+
+  function goToSlide(index) {
+    const slides = document.querySelectorAll('#carouselContainer > div');
+    const dots = document.querySelectorAll('#carouselIndicators button');
+
+    if (!slides[currentSlide]) return; // Safety
+
+    // Hide Current
+    slides[currentSlide].classList.add('carousel-hidden');
+    slides[currentSlide].classList.add('opacity-0');
+    dots[currentSlide].className = 'w-2 h-2 rounded-full bg-white/50 hover:bg-white transition-all duration-300';
+
+    // Show New
+    currentSlide = index;
+    slides[currentSlide].classList.remove('carousel-hidden');
+    slides[currentSlide].classList.remove('opacity-0');
+    dots[currentSlide].className = 'w-4 h-2 rounded-full bg-aesa-blue transition-all duration-300';
+  }
+
+  // --- Navigation Logic ---
+
+  function renderDashboard(groups) {
+    const view = document.getElementById('dashboardView');
+    view.classList.remove('hidden');
+    view.classList.add('fade-in');
+
+    document.getElementById('detailView').classList.add('hidden');
+    document.getElementById('emptyState').classList.add('hidden');
+
+    const container = document.getElementById('categoryButtonsGrid');
+    container.innerHTML = '';
+
+    const categories = Object.keys(groups).sort();
+
+    categories.forEach((cat, index) => {
+      const count = groups[cat].length;
+      const icon = CATEGORY_ICONS[cat] || 'folder';
+
+      const btn = document.createElement('div');
+      btn.className = "bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-aesa-blue transition-all duration-300 cursor-pointer group flex items-center justify-between card-anim";
+      btn.style.animationDelay = `${index * 0.05}s`;
+      btn.onclick = () => showCategoryDetail(cat);
+
+      btn.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-aesa-blue transition-colors duration-300">
+                        <span class="material-icons text-aesa-dark group-hover:text-white text-2xl transition-colors duration-300">${icon}</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-aesa-dark font-condensed uppercase tracking-wide group-hover:text-aesa-blue transition-colors">${cat}</h3>
+                        <p class="text-gray-500 text-xs">${count} Documentos</p>
+                    </div>
+                </div>
+                <span class="material-icons text-gray-300 group-hover:text-aesa-blue group-hover:translate-x-1 transition-all">chevron_right</span>
+            `;
+      container.appendChild(btn);
+    });
+  }
+
+  function showCategoryDetail(categoryName) {
+    document.getElementById('dashboardView').classList.add('hidden');
+    const detailView = document.getElementById('detailView');
+    detailView.classList.remove('hidden');
+    detailView.classList.add('fade-in');
+
+    document.getElementById('currentCategoryTitle').textContent = categoryName;
+
+    const items = groupedData[categoryName];
+    const grid = document.getElementById('cardsGrid');
+    grid.innerHTML = '';
+
+    items.forEach((item, index) => {
+      const card = createCard(item);
+      card.classList.add('card-anim');
+      card.style.animationDelay = `${index * 0.05}s`;
+      grid.appendChild(card);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showDashboard() {
+    document.getElementById('detailView').classList.add('hidden');
+    document.getElementById('emptyState').classList.add('hidden');
+    document.getElementById('searchInput').value = '';
+
+    const dashboard = document.getElementById('dashboardView');
+    dashboard.classList.remove('hidden');
+    dashboard.classList.add('fade-in');
+
+    renderDashboard(groupedData);
+  }
+
+  function createCard(item, highlightTerm = '') {
+    const div = document.createElement('article');
+    div.className = "bg-white rounded overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 flex flex-col h-full card-hover cursor-pointer group card-item";
+    div.dataset.title = (item.TITULO || "").toLowerCase();
+    div.dataset.desc = (item.DESCRIPCION_CORTA || "").toLowerCase();
+    div.onclick = () => openModal(item);
+
+    const imgUrl = (item.LINK_FOTO && item.LINK_FOTO.toString().trim() !== "") ? item.LINK_FOTO : FALLBACK_IMAGE;
+
+    // Highlight Logic
+    let titleHtml = item.TITULO;
+    let descHtml = item.DESCRIPCION_CORTA;
+
+    if (highlightTerm) {
+      const regex = new RegExp(`(${highlightTerm})`, 'gi');
+      titleHtml = titleHtml.replace(regex, '<mark>$1</mark>');
+      descHtml = descHtml.replace(regex, '<mark>$1</mark>');
+    }
+
+    div.innerHTML = `
+            <div class="h-28 overflow-hidden relative bg-gray-100">
+                <img src="${imgUrl}" alt="${item.TITULO}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='${FALLBACK_IMAGE}'">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
+            </div>
+            <div class="p-3 flex flex-col flex-grow">
+                <h3 class="text-sm font-bold font-condensed text-aesa-dark mb-1 leading-tight group-hover:text-aesa-blue transition-colors line-clamp-2">
+                    ${titleHtml}
+                </h3>
+                <p class="text-[11px] text-gray-500 line-clamp-2 mb-3 flex-grow leading-snug">
+                    ${descHtml}
+                </p>
+                <div class="mt-auto border-t border-gray-50 pt-2">
+                    <button class="text-[11px] font-bold text-white bg-aesa-blue hover:bg-blue-900 w-full py-1.5 rounded transition-colors uppercase tracking-wide opacity-90 hover:opacity-100 shadow-sm group-hover:shadow hover:translate-y-px">
+                        VER
+                    </button>
+                </div>
+            </div>
+        `;
+    return div;
+  }
+
+  // --- Interaction Functions ---
+
+  function handleSearch(e) {
+    const term = e.target.value.toLowerCase().trim();
+    const resultsContainer = document.getElementById('searchResultsOverlay');
+
+    if (term === '') {
+      resultsContainer.innerHTML = `
+            <div class="col-span-full text-center text-gray-500 mt-20">
+                <span class="material-icons text-6xl mb-4 opacity-50">manage_search</span>
+                <p class="text-xl">Escribe para comenzar a buscar...</p>
+            </div>
+        `;
+      return;
+    }
+
+    resultsContainer.innerHTML = '';
+    let foundCount = 0;
+
+    // Search in all data
+    Object.values(groupedData).flat().forEach((item, index) => {
+      const title = (item.TITULO || "").toLowerCase();
+      const desc = (item.DESCRIPCION_CORTA || "").toLowerCase();
+
+      if (title.includes(term) || desc.includes(term)) {
+        const card = createCard(item, term);
+        card.onclick = () => {
+          closeSearch();
+          openModal(item);
+        };
+
+        card.classList.add('card-anim');
+        card.style.animationDelay = `${foundCount * 0.05}s`;
+        resultsContainer.appendChild(card);
+        foundCount++;
+      }
+    });
+
+    if (foundCount === 0) {
+      resultsContainer.innerHTML = `
+            <div class="col-span-full text-center text-gray-500 mt-20">
+                <span class="material-icons text-6xl mb-4 opacity-50">search_off</span>
+                <p class="text-xl">No se encontraron resultados para "${term}"</p>
+                <p class="text-sm mt-2">Intenta con otros términos.</p>
+            </div>
+        `;
+    }
+  }
+
+  function showEmptyState(show) {
+    // Kept for compatibility but not used in overlay search
+    const emptyEl = document.getElementById('emptyState');
+    if (show) {
+      emptyEl.classList.remove('hidden');
+      document.getElementById('dashboardView').classList.add('hidden');
+    } else {
+      emptyEl.classList.add('hidden');
+    }
+  }
+
+  function hideLoader() {
+    const loader = document.getElementById('loadingOverlay');
+    loader.style.opacity = '0';
+    setTimeout(() => {
+      loader.classList.add('hidden');
+    }, 500);
+  }
+
+  function openModal(item) {
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modalContainer');
+
+    document.getElementById('modalTitle').textContent = item.TITULO;
+    document.getElementById('modalDescription').textContent = (item.DESCRIPCION_LARGA || item.DESCRIPCION_CORTA || "Sin descripción disponible.");
+    // Category removed
+
+    let dateStr = "N/A";
+    if (item.FECHA) {
+      // Robust Date Parsing
+      const dateObj = new Date(item.FECHA);
+      if (!isNaN(dateObj.getTime())) {
+        dateStr = dateObj.toLocaleDateString();
+      } else {
+        dateStr = String(item.FECHA); // Fallback to raw string
+      }
+    }
+    document.getElementById('modalDate').textContent = dateStr;
+
+    // Link Logic (Top Icon, now in Header)
+    const linkBtn = document.getElementById('modalLink');
+
+    if (item.LINK_INFORMACION && item.LINK_INFORMACION !== "#" && item.LINK_INFORMACION.trim() !== "") {
+      linkBtn.classList.remove('hidden');
+      linkBtn.classList.add('flex');
+      linkBtn.href = item.LINK_INFORMACION;
+    } else {
+      linkBtn.classList.add('hidden');
+      linkBtn.classList.remove('flex');
+    }
+
+    const img = document.getElementById('modalImage');
+    const imgUrl = (item.LINK_FOTO && item.LINK_FOTO.toString().trim() !== "") ? item.LINK_FOTO : FALLBACK_IMAGE;
+    img.src = imgUrl;
+    img.classList.remove('hidden');
+
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modalContent.classList.remove('scale-95');
+      modalContent.classList.add('scale-100');
+    }, 10);
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modalContainer');
+    modalContent.classList.remove('scale-100');
+    modalContent.classList.add('scale-95');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 200);
+  }
+
+  // --- Search Overlay Functions ---
+
+  function openSearch() {
+    const overlay = document.getElementById('searchOverlay');
+    const input = document.getElementById('searchInput');
+    overlay.classList.remove('hidden');
+    // Focus after transition/render
+    setTimeout(() => input.focus(), 100);
+  }
+
+  function closeSearch() {
+    const overlay = document.getElementById('searchOverlay');
+    overlay.classList.add('hidden');
+  }
+
+  // Close search on ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const overlay = document.getElementById('searchOverlay');
+      if (!overlay.classList.contains('hidden')) {
+        closeSearch();
+      }
+    }
+  });
+
+  // Close search on click outside (optional, but good UX)
+  document.getElementById('searchOverlay').addEventListener('click', (e) => {
+    if (e.target.id === 'searchOverlay') closeSearch();
+  });
+</script>
