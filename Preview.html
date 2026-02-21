@@ -40,6 +40,51 @@
             scrollbar-width: none;
         }
 
+        .tarjeta-web {
+            position: relative;
+            --x: 50%;
+            --y: 50%;
+        }
+
+        .oscuridad {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000000;
+            z-index: 55;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            opacity: 0.05;
+        }
+
+        .linterna {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 56;
+            pointer-events: none;
+            opacity: 0.12;
+            transition: opacity 0.4s ease;
+            background: radial-gradient(circle 180px at var(--x, 50%) var(--y, 50%),
+                    rgba(255, 220, 100, 0.08) 0%,
+                    rgba(0, 0, 0, 0.08) 62%,
+                    rgba(0, 0, 0, 0.16) 100%);
+        }
+
+        .tarjeta-web:hover .oscuridad,
+        .tarjeta-web.is-touch-active .oscuridad {
+            opacity: 0.02;
+        }
+
+        .tarjeta-web:hover .linterna,
+        .tarjeta-web.is-touch-active .linterna {
+            opacity: 0.18;
+        }
+
         .card-hover:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -103,10 +148,157 @@
             padding: 0 2px;
             border-radius: 2px;
         }
+
+        .cta-click {
+            position: relative;
+            overflow: hidden;
+            animation: ctaPulse 1.8s ease-in-out infinite;
+        }
+
+        .cta-click::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+            transform: skewX(-20deg);
+            animation: ctaShine 2.2s ease-in-out infinite;
+        }
+
+        @keyframes ctaPulse {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-1px);
+            }
+        }
+
+        @keyframes ctaShine {
+            0% {
+                left: -120%;
+            }
+
+            60%,
+            100% {
+                left: 140%;
+            }
+        }
+
+        .mining-lantern {
+            position: relative;
+            overflow: hidden;
+            border-color: rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .mining-lantern::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            background: radial-gradient(220px circle at var(--lantern-x, 50%) var(--lantern-y, 50%),
+                    rgba(255, 231, 180, 0.3),
+                    rgba(255, 177, 76, 0.15) 34%,
+                    rgba(0, 0, 0, 0.06) 56%,
+                    transparent 75%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 4;
+            transition: opacity 0.25s ease;
+        }
+
+        .mining-lantern::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(550px circle at var(--lantern-x, 50%) var(--lantern-y, 50%),
+                    transparent 0%,
+                    rgba(0, 0, 0, 0.26) 45%,
+                    rgba(0, 0, 0, 0.52) 100%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+            transition: opacity 0.25s ease;
+        }
+
+        .mining-lantern:hover::before,
+        .mining-lantern.active::before,
+        .mining-lantern:hover::after,
+        .mining-lantern.active::after {
+            opacity: 1;
+        }
+
+        .mining-surface {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .mining-surface::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(220px circle at var(--lantern-x, 50%) var(--lantern-y, 50%),
+                    rgba(255, 231, 180, 0.22),
+                    rgba(255, 177, 76, 0.10) 35%,
+                    rgba(0, 0, 0, 0.04) 58%,
+                    transparent 75%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 3;
+            transition: opacity 0.25s ease;
+        }
+
+        .mining-surface::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(520px circle at var(--lantern-x, 50%) var(--lantern-y, 50%),
+                    transparent 0%,
+                    rgba(0, 0, 0, 0.18) 55%,
+                    rgba(0, 0, 0, 0.34) 100%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 2;
+            transition: opacity 0.25s ease;
+        }
+
+        .mining-surface:hover::before,
+        .mining-surface.active::before,
+        .mining-surface:hover::after,
+        .mining-surface.active::after {
+            opacity: 1;
+        }
+
+        .group-title-clamp {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.1;
+            max-height: 2.2em;
+        }
+
+        #modalDescription .modal-html-content> :first-child {
+            margin-top: 0 !important;
+        }
+
+        #modalDescription .modal-html-content> :last-child {
+            margin-bottom: 0 !important;
+        }
     </style>
 </head>
 
-<body class="bg-gray-50 text-aesa-text font-display m-0 p-0 min-h-screen flex flex-col">
+<body class="tarjeta-web text-aesa-text font-display m-0 p-0 min-h-screen flex flex-col"
+    style="background:
+    linear-gradient(rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.50)),
+    #ffffff url('https://lh3.googleusercontent.com/d/1QL5WyAX92EXZ4vXtR9J9Ux1JYUp7ELBL') center center / cover no-repeat fixed;">
+    <div class="oscuridad"></div>
+    <div class="linterna"></div>
 
     <!-- Loading Screen -->
     <div id="loadingOverlay"
@@ -147,7 +339,7 @@
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
         <section id="heroSection"
-            class="hidden relative rounded-xl overflow-hidden shadow-xl bg-aesa-dark group h-48 md:h-64">
+            class="hidden relative rounded-xl overflow-hidden shadow-xl bg-aesa-dark group h-48 md:h-64 border border-white/80">
             <div id="carouselContainer" class="w-full h-full relative"></div>
             <div id="carouselIndicators" class="absolute bottom-4 right-4 flex gap-2 z-30"></div>
         </section>
@@ -155,10 +347,10 @@
         <div id="dashboardView" class="hidden">
             <div class="flex items-end gap-2 mb-4">
                 <h2
-                    class="text-xl font-bold font-condensed text-aesa-dark uppercase tracking-wide border-l-4 border-aesa-blue pl-3">
+                    class="inline-flex items-center text-xl font-bold font-condensed text-white uppercase tracking-wide border-l-4 border-aesa-blue pl-3 pr-3 py-1 rounded-r-md bg-black/45 backdrop-blur-[1px] shadow-md">
                     Explorar por Categorías</h2>
             </div>
-            <div id="categoryButtonsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+            <div id="categoryButtonsGrid" class="grid grid-cols-2 gap-4 md:gap-6"></div>
         </div>
 
         <div id="detailView" class="hidden">
@@ -168,9 +360,9 @@
                     <span class="material-icons text-sm">arrow_back</span> Volver
                 </button>
                 <h2 id="currentCategoryTitle"
-                    class="text-2xl font-bold font-condensed text-aesa-dark uppercase tracking-wide"></h2>
+                    class="inline-flex items-center text-2xl font-bold font-condensed text-white uppercase tracking-wide border-l-4 border-aesa-blue pl-3 pr-3 py-1 rounded-r-md bg-black/45 backdrop-blur-[1px] shadow-md"></h2>
             </div>
-            <div id="cardsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+            <div id="cardsGrid" class="grid grid-cols-2 gap-4"></div>
         </div>
 
         <div id="emptyState" class="hidden flex flex-col items-center justify-center py-20">
@@ -189,12 +381,7 @@
             <div class="bg-aesa-blue px-6 py-4 flex items-center gap-4">
                 <h3 id="modalTitle" class="text-white text-xl font-bold font-condensed flex-grow leading-tight">Título
                     del Documento</h3>
-                <a id="modalLink" href="#" target="_blank"
-                    class="hidden items-center gap-1.5 text-aesa-blue bg-white hover:bg-gray-50 px-3 py-1 rounded-full text-[10px] font-bold transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 uppercase tracking-wide whitespace-nowrap group text-center">
-                    <span class="material-icons text-xs group-hover:rotate-12 transition-transform">visibility</span>
-                    CLICK AQUI<br>PARA VER
-                </a>
-                <button id="closeModal"
+<button id="closeModal"
                     class="text-white hover:bg-black/20 rounded-full p-1 transition-colors flex items-center justify-center shrink-0">
                     <span class="material-icons">close</span>
                 </button>
@@ -211,8 +398,13 @@
                         <div>
                             <h4 class="text-sm font-bold text-aesa-dark uppercase tracking-wide mb-2">Descripción</h4>
                             <div class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                                <p id="modalDescription" class="text-gray-600 text-sm leading-relaxed"></p>
+                                <div id="modalDescription" class="text-gray-600 text-sm leading-relaxed"></div>
                             </div>
+                            <a id="modalLink" href="#" target="_blank"
+                                class="hidden mt-4 w-full sm:w-auto justify-center items-center gap-2 px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider text-white bg-aesa-blue hover:bg-blue-900 shadow-md hover:shadow-xl transition-all duration-300 cta-click">
+                                <span class="material-icons text-sm">ads_click</span>
+                                CLICK AQUI
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -237,7 +429,7 @@
                 </button>
             </div>
             <div id="searchResultsOverlay"
-                class="flex-grow overflow-y-auto custom-scrollbar pb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 content-start">
+                class="flex-grow overflow-y-auto custom-scrollbar pb-10 grid grid-cols-2 gap-4 content-start">
                 <div class="col-span-full text-center text-gray-500 mt-20">
                     <span class="material-icons text-6xl mb-4 opacity-50 text-aesa-blue">manage_search</span>
                     <p class="text-xl">Escribe para comenzar a buscar...</p>
@@ -252,11 +444,43 @@
             { TITULO: "Protocolo de Seguridad en Socavón", CATEGORIA: "Comunicado", DESCRIPCION_CORTA: "Actualización de medidas de emergencia para el nivel 4.", LINK_FOTO: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=1200", FECHA: "2024-10-25", LINK_INFORMACION: "https://example.com/pdf", ORDEN: 1 },
             { TITULO: "Mantenimiento Preventivo Jumbos", CATEGORIA: "Mantenimiento", DESCRIPCION_CORTA: "Guía de revisión técnica diaria.", LINK_FOTO: "", FECHA: "2024-10-20", LINK_INFORMACION: "", ORDEN: 1 },
             { TITULO: "PETS Excavación Convencional", CATEGORIA: "PETS", DESCRIPCION_CORTA: "Procedimiento estándar de excavación.", LINK_FOTO: "https://images.unsplash.com/photo-1586769852044-692d6e692453?auto=format&fit=crop&q=80&w=400", FECHA: "2024-09-15", LINK_INFORMACION: "https://example.com/pets", ORDEN: 1 },
-            { TITULO: "Estándar de EPP 2024", CATEGORIA: "Estándares", DESCRIPCION_CORTA: "Requerimientos mínimos de protección personal.", FECHA: "2024-08-01", ORDEN: 1 }
+            { TITULO: "Estándar de EPP 2024", CATEGORIA: "Estándares", DESCRIPCION_CORTA: "Requerimientos mínimos de protección personal.", FECHA: "2024-08-01", ORDEN: 1 },
+            {
+                TITULO: "Plan Anual de Capacitación - PAC",
+                CATEGORIA: "PAC",
+                DESCRIPCION_CORTA: "Contenido HTML de tabla para pruebas PAC.",
+                DESCRIPCION_LARGA: `<table>
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Examen</th>
+                            <th>Presentación</th>
+                            <th>Video</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Prevención y protección contra incendios</strong></td>
+                            <td><a href="https://forms.gle/yXzQsCutkTcsdi9c6" target="_blank" class="btn btn-examen">Rendir</a></td>
+                            <td><a href="https://forms.gle/yXzQsCutkTcsdi9c6" target="_blank" class="btn btn-presentacion">Ver</a></td>
+                            <td><a href="https://forms.gle/yXzQsCutkTcsdi9c6" target="_blank" class="btn btn-video">Ver</a></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Trabajos en altura</strong></td>
+                            <td><a href="https://forms.gle/AmKk4BXBrRzT1GPE9" target="_blank" class="btn btn-examen">Rendir</a></td>
+                            <td><a href="https://forms.gle/AmKk4BXBrRzT1GPE9" target="_blank" class="btn btn-presentacion">Ver</a></td>
+                            <td><a href="https://forms.gle/AmKk4BXBrRzT1GPE9" target="_blank" class="btn btn-video">Ver</a></td>
+                        </tr>
+                    </tbody>
+                </table>`,
+                FECHA: "2026-02-21",
+                LINK_INFORMACION: "",
+                ORDEN: 1
+            }
         ];
 
         const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?auto=format&fit=crop&q=80&w=800";
-        const CATEGORY_ICONS = { 'PETS': 'description', 'Estándares': 'rule', 'IPERC': 'warning_amber', 'Capacitación': 'school', 'Examen': 'quiz', 'Otros': 'folder' };
+        const CATEGORY_ICONS = { 'PETS': 'description', 'Estándares': 'rule', 'IPERC': 'warning_amber', 'Capacitación': 'school', 'Examen': 'quiz', 'PAC': 'table_chart', 'Otros': 'folder' };
 
         let appData = [];
         let groupedData = {};
@@ -268,11 +492,42 @@
         document.addEventListener('DOMContentLoaded', () => {
             // In preview mode, use mock data
             onDataSuccess(MOCK_DATA);
+            initGlobalLanternEffect();
 
             document.getElementById('closeModal').addEventListener('click', closeModal);
             document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
             document.getElementById('searchInput').addEventListener('input', handleSearch);
         });
+
+        function initGlobalLanternEffect() {
+            const target = document.body;
+            if (!target) return;
+
+            const setPosition = (clientX, clientY) => {
+                target.style.setProperty('--x', `${clientX}px`);
+                target.style.setProperty('--y', `${clientY}px`);
+            };
+
+            document.addEventListener('mousemove', (e) => {
+                setPosition(e.clientX, e.clientY);
+            });
+
+            document.addEventListener('touchstart', (e) => {
+                if (!e.touches || e.touches.length === 0) return;
+                setPosition(e.touches[0].clientX, e.touches[0].clientY);
+                target.classList.add('is-touch-active');
+            }, { passive: true });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!e.touches || e.touches.length === 0) return;
+                setPosition(e.touches[0].clientX, e.touches[0].clientY);
+                target.classList.add('is-touch-active');
+            }, { passive: true });
+
+            document.addEventListener('touchend', () => {
+                target.classList.remove('is-touch-active');
+            });
+        }
 
         function onDataSuccess(data) {
             if (!data || data.length === 0) { showEmptyState(true); hideLoader(); return; }
@@ -309,7 +564,7 @@
                 slide.className = `absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${isHidden}`;
                 slide.dataset.index = index;
                 slide.onclick = () => openModal(item);
-                slide.innerHTML = `<div class="relative w-full h-full cursor-pointer"><div class="absolute inset-0 bg-gradient-to-r from-aesa-dark via-aesa-dark/80 to-transparent z-10"></div><img src="${item.LINK_FOTO || FALLBACK_IMAGE}" alt="Comunicado" class="w-full h-full object-cover opacity-60" onerror="this.src='${FALLBACK_IMAGE}'"><div class="absolute inset-0 z-20 flex flex-col justify-center px-6 md:px-12 max-w-4xl"><span class="inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full bg-aesa-blue text-white text-[10px] font-bold uppercase tracking-wider mb-2 shadow-sm animate-pulse"><span class="material-icons text-[10px]">campaign</span> Comunicado</span><h2 class="text-xl md:text-3xl font-bold text-white mb-2 leading-tight font-condensed line-clamp-1">${item.TITULO}</h2><p class="text-gray-300 text-xs md:text-sm line-clamp-2 max-w-2xl mb-3">${item.DESCRIPCION_CORTA}</p><button class="bg-white text-aesa-dark hover:bg-gray-100 font-bold py-1.5 px-4 rounded text-xs transition-all flex items-center gap-1 shadow-md self-start">LEER MÁS <span class="material-icons text-[10px]">arrow_forward</span></button></div></div>`;
+                slide.innerHTML = `<div class="relative w-full h-full cursor-pointer"><img src="${item.LINK_FOTO || FALLBACK_IMAGE}" alt="Comunicado" class="w-full h-full object-cover" onerror="this.src='${FALLBACK_IMAGE}'"><div class="absolute inset-0 z-20 flex flex-col justify-center px-6 md:px-12 max-w-4xl"><span class="inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full bg-aesa-blue text-white text-[10px] font-bold uppercase tracking-wider mb-2 shadow-sm animate-pulse"><span class="material-icons text-[10px]">campaign</span> Comunicado</span><h2 class="text-xl md:text-3xl font-bold text-white mb-2 leading-tight font-condensed line-clamp-1">${item.TITULO}</h2><p class="text-gray-300 text-xs md:text-sm line-clamp-2 max-w-2xl mb-3">${item.DESCRIPCION_CORTA}</p><button class="bg-white text-aesa-dark hover:bg-gray-100 font-bold py-1.5 px-4 rounded text-xs transition-all flex items-center gap-1 shadow-md self-start">LEER MÁS <span class="material-icons text-[10px]">arrow_forward</span></button></div></div>`;
                 innerContainer.appendChild(slide);
                 const dot = document.createElement('button');
                 dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${index === 0 ? 'bg-aesa-blue w-4' : 'bg-white/50 hover:bg-white'}`;
@@ -346,10 +601,25 @@
                 const count = groups[cat].length;
                 const icon = CATEGORY_ICONS[cat] || 'folder';
                 const btn = document.createElement('div');
-                btn.className = "bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-aesa-blue transition-all duration-300 cursor-pointer group flex items-center justify-between card-anim";
+                btn.className = "bg-white/90 p-4 h-28 rounded-2xl shadow-sm border border-white/40 hover:shadow-lg hover:border-aesa-blue transition-all duration-300 cursor-pointer group relative card-anim mining-surface";
                 btn.style.animationDelay = `${index * 0.05}s`;
                 btn.onclick = () => showCategoryDetail(cat);
-                btn.innerHTML = `<div class="flex items-center gap-4"><div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-aesa-blue transition-colors duration-300"><span class="material-icons text-aesa-dark group-hover:text-white text-2xl transition-colors duration-300">${icon}</span></div><div><h3 class="font-bold text-lg text-aesa-dark font-condensed uppercase tracking-wide group-hover:text-aesa-blue transition-colors">${cat}</h3><p class="text-gray-500 text-xs">${count} Documentos</p></div></div><span class="material-icons text-gray-300 group-hover:text-aesa-blue group-hover:translate-x-1 transition-all">chevron_right</span>`;
+                btn.innerHTML = `<div class="h-full flex flex-col justify-between min-w-0 pr-6"><h3 class="font-bold text-xl text-aesa-dark font-condensed uppercase tracking-wide group-hover:text-aesa-blue transition-colors leading-tight break-words whitespace-normal group-title-clamp pr-0">${cat}</h3><div class="flex items-center gap-3 min-w-0"><div class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0"><span class="material-icons text-amber-500 text-[22px] leading-none">folder</span></div><p class="text-slate-600 text-sm leading-tight font-medium">${count} Elementos</p></div></div><span class="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 group-hover:text-aesa-blue group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>`;
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    btn.style.setProperty('--lantern-x', `${e.clientX - rect.left}px`);
+                    btn.style.setProperty('--lantern-y', `${e.clientY - rect.top}px`);
+                    btn.classList.add('active');
+                });
+                btn.addEventListener('mouseleave', () => btn.classList.remove('active'));
+                btn.addEventListener('touchmove', (e) => {
+                    if (!e.touches || e.touches.length === 0) return;
+                    const rect = btn.getBoundingClientRect();
+                    btn.style.setProperty('--lantern-x', `${e.touches[0].clientX - rect.left}px`);
+                    btn.style.setProperty('--lantern-y', `${e.touches[0].clientY - rect.top}px`);
+                    btn.classList.add('active');
+                });
+                btn.addEventListener('touchend', () => btn.classList.remove('active'));
                 container.appendChild(btn);
             });
         }
@@ -376,7 +646,7 @@
 
         function createCard(item, highlightTerm = '') {
             const div = document.createElement('article');
-            div.className = "bg-white rounded overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 flex flex-col h-full card-hover cursor-pointer group card-item";
+            div.className = "bg-white rounded overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 flex flex-col h-full card-hover cursor-pointer group card-item mining-lantern";
             div.onclick = () => openModal(item);
             const imgUrl = (item.LINK_FOTO && item.LINK_FOTO.toString().trim() !== "") ? item.LINK_FOTO : FALLBACK_IMAGE;
             let titleHtml = item.TITULO; let descHtml = item.DESCRIPCION_CORTA;
@@ -385,6 +655,31 @@
                 titleHtml = titleHtml.replace(regex, '<mark>$1</mark>'); descHtml = descHtml.replace(regex, '<mark>$1</mark>');
             }
             div.innerHTML = `<div class="h-28 overflow-hidden relative bg-gray-100"><img src="${imgUrl}" alt="${item.TITULO}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='${FALLBACK_IMAGE}'"><div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div></div><div class="p-3 flex flex-col flex-grow"><h3 class="text-sm font-bold font-condensed text-aesa-dark mb-1 leading-tight group-hover:text-aesa-blue transition-colors line-clamp-2">${titleHtml}</h3><p class="text-[11px] text-gray-500 line-clamp-2 mb-3 flex-grow leading-snug">${descHtml}</p><div class="mt-auto border-t border-gray-50 pt-2"><button class="text-[11px] font-bold text-white bg-aesa-blue hover:bg-blue-900 w-full py-1.5 rounded transition-colors uppercase tracking-wide opacity-90 hover:opacity-100 shadow-sm group-hover:shadow hover:translate-y-px">VER</button></div></div>`;
+            // Linterna minera efecto
+            div.addEventListener('mousemove', (e) => {
+                const rect = div.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                div.style.setProperty('--lantern-x', `${x}px`);
+                div.style.setProperty('--lantern-y', `${y}px`);
+                div.classList.add('active');
+            });
+            div.addEventListener('mouseleave', () => {
+                div.classList.remove('active');
+            });
+            div.addEventListener('touchmove', (e) => {
+                if (e.touches && e.touches.length > 0) {
+                    const rect = div.getBoundingClientRect();
+                    const x = e.touches[0].clientX - rect.left;
+                    const y = e.touches[0].clientY - rect.top;
+                    div.style.setProperty('--lantern-x', `${x}px`);
+                    div.style.setProperty('--lantern-y', `${y}px`);
+                    div.classList.add('active');
+                }
+            });
+            div.addEventListener('touchend', () => {
+                div.classList.remove('active');
+            });
             return div;
         }
 
@@ -408,10 +703,112 @@
         function openModal(item) {
             const modal = document.getElementById('modal'); const cont = document.getElementById('modalContainer');
             document.getElementById('modalTitle').textContent = item.TITULO;
-            document.getElementById('modalDescription').textContent = item.DESCRIPCION_CORTA || "Sin descripción.";
+            const modalDescription = item.DESCRIPCION_LARGA || item.DESCRIPCION_CORTA || "Sin descripción.";
+            const descEl = document.getElementById('modalDescription');
+            const normalizedCategory = String(item.CATEGORIA || "").trim().toUpperCase();
+
+            if (normalizedCategory === 'PAC') {
+                descEl.style.whiteSpace = 'normal';
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(String(modalDescription), 'text/html');
+                const tableEl = doc.querySelector('table');
+                if (tableEl) {
+                    const rows = tableEl.querySelectorAll('tbody tr');
+                    rows.forEach((row) => {
+                        const cells = row.querySelectorAll('td');
+                        const map = [
+                            { idx: 1, cls: 'btn-examen', label: 'Rendir' },
+                            { idx: 2, cls: 'btn-presentacion', label: 'Ver' },
+                            { idx: 3, cls: 'btn-video', label: 'Ver' }
+                        ];
+                        map.forEach(({ idx, cls, label }) => {
+                            const cell = cells[idx];
+                            if (!cell) return;
+                            const anchor = cell.querySelector('a');
+                            if (!anchor) return;
+                            anchor.classList.remove('btn-examen', 'btn-presentacion', 'btn-video');
+                            anchor.classList.add('btn', cls);
+                            anchor.textContent = label;
+                            anchor.setAttribute('target', '_blank');
+                            anchor.setAttribute('rel', 'noopener noreferrer');
+                        });
+                    });
+                }
+                const tableHtml = tableEl ? tableEl.outerHTML : (doc.body ? doc.body.innerHTML : String(modalDescription));
+
+                descEl.innerHTML = `
+                    <style>
+                        #modalDescription .pac-html-content{
+                            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+                            background:linear-gradient(135deg,#f4f6f9,#e9eef5);
+                            padding:8px 10px;
+                            border-radius:12px;
+                        }
+                        #modalDescription .pac-note{
+                            margin:0 0 6px 0;
+                            color:#1f2937;
+                            font-weight:600;
+                            font-size:14px;
+                        }
+                        #modalDescription .pac-table-container{
+                            max-width:100%;
+                            margin:auto;
+                            overflow-x:auto;
+                        }
+                        #modalDescription .pac-table-container table{
+                            width:100%;
+                            border-collapse:collapse;
+                            background:#fff;
+                            border-radius:12px;
+                            overflow:hidden;
+                            box-shadow:0 8px 20px rgba(0,0,0,0.08);
+                            margin-top:0;
+                        }
+                        #modalDescription .pac-table-container thead{
+                            background:#1f2937;
+                            color:#fff;
+                        }
+                        #modalDescription .pac-table-container th,
+                        #modalDescription .pac-table-container td{
+                            padding:12px;
+                            text-align:center;
+                            font-size:13px;
+                        }
+                        #modalDescription .pac-table-container tbody tr{
+                            transition:0.3s ease;
+                        }
+                        #modalDescription .pac-table-container tbody tr:hover{
+                            background:#f3f4f6;
+                        }
+                        #modalDescription .pac-table-container .btn{
+                            display:inline-block;
+                            padding:7px 12px;
+                            border-radius:8px;
+                            text-decoration:none;
+                            font-weight:600;
+                            font-size:12px;
+                            color:#fff;
+                            transition:0.3s ease;
+                        }
+                        #modalDescription .pac-table-container .btn-examen{ background:#2563eb; }
+                        #modalDescription .pac-table-container .btn-examen:hover{ background:#1d4ed8; }
+                        #modalDescription .pac-table-container .btn-presentacion{ background:#10b981; }
+                        #modalDescription .pac-table-container .btn-presentacion:hover{ background:#059669; }
+                        #modalDescription .pac-table-container .btn-video{ background:#f59e0b; }
+                        #modalDescription .pac-table-container .btn-video:hover{ background:#d97706; }
+                    </style>
+                    <div class="pac-html-content">
+                        <p class="pac-note">A continuación las capacitaciones del mes:</p>
+                        <div class="pac-table-container">${tableHtml}</div>
+                    </div>
+                `;
+            } else {
+                descEl.style.whiteSpace = 'pre-line';
+                descEl.textContent = modalDescription;
+            }
             document.getElementById('modalDate').textContent = item.FECHA || "N/A";
             const linkBtn = document.getElementById('modalLink');
-            if (item.LINK_INFORMACION && item.LINK_INFORMACION !== "#") { linkBtn.classList.remove('hidden'); linkBtn.classList.add('flex'); linkBtn.href = item.LINK_INFORMACION; } else { linkBtn.classList.add('hidden', 'flex'); }
+            if (item.LINK_INFORMACION && item.LINK_INFORMACION !== "#") { linkBtn.classList.remove('hidden'); linkBtn.classList.add('inline-flex'); linkBtn.href = item.LINK_INFORMACION; } else { linkBtn.classList.add('hidden'); linkBtn.classList.remove('inline-flex'); }
             const img = document.getElementById('modalImage'); img.src = item.LINK_FOTO || FALLBACK_IMAGE; img.classList.remove('hidden');
             modal.classList.remove('hidden'); setTimeout(() => cont.classList.remove('scale-95'), 10);
         }
@@ -423,3 +820,9 @@
 </body>
 
 </html>
+
+
+
+
+
+

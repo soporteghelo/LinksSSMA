@@ -34,7 +34,74 @@
       if (e.target.id === 'modal') closeModal();
     });
     document.getElementById('searchInput').addEventListener('input', handleSearch);
+    initGlobalLanternEffect();
+
   });
+
+  function initGlobalLanternEffect() {
+    const target = document.body;
+    if (!target) return;
+
+    const setPosition = (clientX, clientY) => {
+      target.style.setProperty('--x', `${clientX}px`);
+      target.style.setProperty('--y', `${clientY}px`);
+    };
+
+    document.addEventListener('mousemove', (e) => {
+      setPosition(e.clientX, e.clientY);
+    });
+
+    document.addEventListener('touchstart', (e) => {
+      if (!e.touches || e.touches.length === 0) return;
+      setPosition(e.touches[0].clientX, e.touches[0].clientY);
+      target.classList.add('is-touch-active');
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      if (!e.touches || e.touches.length === 0) return;
+      setPosition(e.touches[0].clientX, e.touches[0].clientY);
+      target.classList.add('is-touch-active');
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+      target.classList.remove('is-touch-active');
+    });
+  }
+
+  function applyLanternEffect(element) {
+    const updateLantern = (clientX, clientY) => {
+      const rect = element.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      element.style.setProperty('--mouse-x', `${x}px`);
+      element.style.setProperty('--mouse-y', `${y}px`);
+    };
+
+    element.addEventListener('mousemove', (e) => {
+      updateLantern(e.clientX, e.clientY);
+      element.classList.add('is-lit');
+    });
+
+    element.addEventListener('mouseleave', () => {
+      element.classList.remove('is-lit');
+    });
+
+    element.addEventListener('touchstart', (e) => {
+      if (!e.touches || e.touches.length === 0) return;
+      updateLantern(e.touches[0].clientX, e.touches[0].clientY);
+      element.classList.add('is-lit');
+    }, { passive: true });
+
+    element.addEventListener('touchmove', (e) => {
+      if (!e.touches || e.touches.length === 0) return;
+      updateLantern(e.touches[0].clientX, e.touches[0].clientY);
+      element.classList.add('is-lit');
+    }, { passive: true });
+
+    element.addEventListener('touchend', () => {
+      element.classList.remove('is-lit');
+    });
+  }
 
   function onDataSuccess(data) {
     console.log("Data received from backend:", data); // Debugging
@@ -112,8 +179,7 @@
 
       slide.innerHTML = `
                  <div class="relative w-full h-full cursor-pointer">
-                    <div class="absolute inset-0 bg-gradient-to-r from-aesa-dark via-aesa-dark/80 to-transparent z-10"></div>
-                    <img src="${item.LINK_FOTO || FALLBACK_IMAGE}" alt="Comunicado" class="w-full h-full object-cover opacity-60" onerror="this.src='${FALLBACK_IMAGE}'">
+                    <img src="${item.LINK_FOTO || FALLBACK_IMAGE}" alt="Comunicado" class="w-full h-full object-cover" onerror="this.src='${FALLBACK_IMAGE}'">
                     
                     <div class="absolute inset-0 z-20 flex flex-col justify-center px-6 md:px-12 max-w-4xl">
                         <span class="inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full bg-aesa-blue text-white text-[10px] font-bold uppercase tracking-wider mb-2 shadow-sm animate-pulse">
@@ -224,22 +290,23 @@
       const icon = CATEGORY_ICONS[cat] || 'folder';
 
       const btn = document.createElement('div');
-      btn.className = "bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-aesa-blue transition-all duration-300 cursor-pointer group flex items-center justify-between card-anim";
+      btn.className = "bg-white/90 p-4 h-28 rounded-2xl shadow-sm border border-white/40 hover:shadow-lg hover:border-aesa-blue transition-all duration-300 cursor-pointer group relative card-anim mining-surface";
       btn.style.animationDelay = `${index * 0.05}s`;
       btn.onclick = () => showCategoryDetail(cat);
 
       btn.innerHTML = `
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-aesa-blue transition-colors duration-300">
-                        <span class="material-icons text-aesa-dark group-hover:text-white text-2xl transition-colors duration-300">${icon}</span>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-lg text-aesa-dark font-condensed uppercase tracking-wide group-hover:text-aesa-blue transition-colors">${cat}</h3>
-                        <p class="text-gray-500 text-xs">${count} Documentos</p>
+                <div class="h-full flex flex-col justify-between min-w-0 pr-6">
+                    <h3 class="font-bold text-xl text-aesa-dark font-condensed uppercase tracking-wide group-hover:text-aesa-blue transition-colors leading-tight break-words whitespace-normal group-title-clamp pr-0">${cat}</h3>
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
+                            <span class="material-icons text-amber-500 text-[22px] leading-none">folder</span>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-tight font-medium">${count} Elementos</p>
                     </div>
                 </div>
-                <span class="material-icons text-gray-300 group-hover:text-aesa-blue group-hover:translate-x-1 transition-all">chevron_right</span>
+                <span class="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 group-hover:text-aesa-blue group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
             `;
+      applyLanternEffect(btn);
       container.appendChild(btn);
     });
   }
@@ -279,7 +346,7 @@
 
   function createCard(item, highlightTerm = '') {
     const div = document.createElement('article');
-    div.className = "bg-white rounded overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 flex flex-col h-full card-hover cursor-pointer group card-item";
+    div.className = "bg-white/95 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200 flex flex-col h-full card-hover cursor-pointer group card-item flashlight-card";
     div.dataset.title = (item.TITULO || "").toLowerCase();
     div.dataset.desc = (item.DESCRIPCION_CORTA || "").toLowerCase();
     div.onclick = () => openModal(item);
@@ -301,7 +368,7 @@
                 <img src="${imgUrl}" alt="${item.TITULO}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='${FALLBACK_IMAGE}'">
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
             </div>
-            <div class="p-3 flex flex-col flex-grow">
+            <div class="p-3 flex flex-col flex-grow bg-white">
                 <h3 class="text-sm font-bold font-condensed text-aesa-dark mb-1 leading-tight group-hover:text-aesa-blue transition-colors line-clamp-2">
                     ${titleHtml}
                 </h3>
@@ -315,6 +382,9 @@
                 </div>
             </div>
         `;
+
+    applyLanternEffect(div);
+
     return div;
   }
 
@@ -386,12 +456,146 @@
     }, 500);
   }
 
+  function renderDescriptionContent(rawDescription, category) {
+    const descEl = document.getElementById('modalDescription');
+    if (!descEl) return;
+
+    const value = String(rawDescription || "Sin descripción disponible.");
+    const normalizedCategory = String(category || "").trim().toUpperCase();
+
+    if (normalizedCategory === 'PAC') {
+      descEl.style.whiteSpace = 'normal';
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(value, 'text/html');
+      const tableEl = doc.querySelector('table');
+      if (tableEl) {
+        const rows = tableEl.querySelectorAll('tbody tr');
+        rows.forEach((row) => {
+          const cells = row.querySelectorAll('td');
+          // Col 1: Examen, Col 2: Presentacion, Col 3: Video
+          const map = [
+            { idx: 1, cls: 'btn-examen', label: 'Rendir' },
+            { idx: 2, cls: 'btn-presentacion', label: 'Ver' },
+            { idx: 3, cls: 'btn-video', label: 'Ver' }
+          ];
+          map.forEach(({ idx, cls, label }) => {
+            const cell = cells[idx];
+            if (!cell) return;
+            const anchor = cell.querySelector('a');
+            if (!anchor) return;
+            anchor.classList.remove('btn-examen', 'btn-presentacion', 'btn-video');
+            anchor.classList.add('btn', cls);
+            anchor.textContent = label;
+            anchor.setAttribute('target', '_blank');
+            anchor.setAttribute('rel', 'noopener noreferrer');
+          });
+        });
+      }
+      const tableHtml = tableEl ? tableEl.outerHTML : (doc.body ? doc.body.innerHTML : value);
+
+      descEl.innerHTML = `
+        <style>
+          #modalDescription .pac-html-content{
+            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+            background:linear-gradient(135deg,#f4f6f9,#e9eef5);
+            padding:8px 10px;
+            border-radius:12px;
+          }
+          #modalDescription .pac-note{
+            margin:0 0 6px 0;
+            color:#1f2937;
+            font-weight:600;
+            font-size:14px;
+          }
+          #modalDescription .pac-table-container{
+            max-width:100%;
+            margin:auto;
+            overflow-x:auto;
+          }
+          #modalDescription .pac-table-container table{
+            width:100%;
+            border-collapse:collapse;
+            background:#fff;
+            border-radius:12px;
+            overflow:hidden;
+            box-shadow:0 8px 20px rgba(0,0,0,0.08);
+            margin-top:0;
+          }
+          #modalDescription .pac-table-container thead{
+            background:#1f2937;
+            color:#fff;
+          }
+          #modalDescription .pac-table-container th,
+          #modalDescription .pac-table-container td{
+            padding:12px;
+            text-align:center;
+            font-size:13px;
+          }
+          #modalDescription .pac-table-container tbody tr{
+            transition:0.3s ease;
+          }
+          #modalDescription .pac-table-container tbody tr:hover{
+            background:#f3f4f6;
+          }
+          #modalDescription .pac-table-container .btn{
+            display:inline-block;
+            padding:7px 12px;
+            border-radius:8px;
+            text-decoration:none;
+            font-weight:600;
+            font-size:12px;
+            color:#fff;
+            transition:0.3s ease;
+          }
+          #modalDescription .pac-table-container .btn-examen{ background:#2563eb; }
+          #modalDescription .pac-table-container .btn-examen:hover{ background:#1d4ed8; }
+          #modalDescription .pac-table-container .btn-presentacion{ background:#10b981; }
+          #modalDescription .pac-table-container .btn-presentacion:hover{ background:#059669; }
+          #modalDescription .pac-table-container .btn-video{ background:#f59e0b; }
+          #modalDescription .pac-table-container .btn-video:hover{ background:#d97706; }
+        </style>
+        <div class="pac-html-content">
+          <p class="pac-note">A continuación las capacitaciones del mes:</p>
+          <div class="pac-table-container">${tableHtml}</div>
+        </div>
+      `;
+      return;
+    }
+
+    const hasHtml = /<\/?[a-z][\s\S]*>/i.test(value);
+
+    if (hasHtml) {
+      descEl.style.whiteSpace = 'normal';
+      // If HTML is present (or mixed with text), render preserving original order.
+      // Normalize full HTML documents (<html>/<head>/<body>) to avoid large spacing from body styles.
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(value, 'text/html');
+
+      const styleBlocks = Array.from(doc.querySelectorAll('style'))
+        .map((styleEl) => styleEl.textContent || '')
+        .join('\n');
+
+      // Scope "body { ... }" styles to modal content and neutralize padding/margins.
+      const scopedStyles = styleBlocks
+        .replace(/\bbody\s*\{/gi, '.modal-html-content {')
+        .concat('\n.modal-html-content{padding:0 !important;margin:0 !important;background:transparent !important;}');
+
+      // Keep original order of text + HTML as found in body content.
+      const bodyContent = doc.body ? doc.body.innerHTML : value;
+      descEl.innerHTML = `<style>${scopedStyles}</style><div class="modal-html-content">${bodyContent}</div>`;
+      return;
+    }
+
+    descEl.style.whiteSpace = 'pre-line';
+    descEl.textContent = value;
+  }
+
   function openModal(item) {
     const modal = document.getElementById('modal');
     const modalContent = document.getElementById('modalContainer');
 
     document.getElementById('modalTitle').textContent = item.TITULO;
-    document.getElementById('modalDescription').textContent = (item.DESCRIPCION_LARGA || item.DESCRIPCION_CORTA || "Sin descripción disponible.");
+    renderDescriptionContent(item.DESCRIPCION_LARGA || item.DESCRIPCION_CORTA, item.CATEGORIA);
     // Category removed
 
     let dateStr = "N/A";
@@ -406,16 +610,16 @@
     }
     document.getElementById('modalDate').textContent = dateStr;
 
-    // Link Logic (Top Icon, now in Header)
+    // Link CTA at the end of description
     const linkBtn = document.getElementById('modalLink');
 
     if (item.LINK_INFORMACION && item.LINK_INFORMACION !== "#" && item.LINK_INFORMACION.trim() !== "") {
       linkBtn.classList.remove('hidden');
-      linkBtn.classList.add('flex');
+      linkBtn.classList.add('inline-flex');
       linkBtn.href = item.LINK_INFORMACION;
     } else {
       linkBtn.classList.add('hidden');
-      linkBtn.classList.remove('flex');
+      linkBtn.classList.remove('inline-flex');
     }
 
     const img = document.getElementById('modalImage');
@@ -470,3 +674,4 @@
     if (e.target.id === 'searchOverlay') closeSearch();
   });
 </script>
+

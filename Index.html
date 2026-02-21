@@ -8,14 +8,17 @@
   <?!= HtmlService.createHtmlOutputFromFile('Styles').getContent(); ?>
 </head>
 
-<body class="bg-gray-50 text-aesa-text font-display m-0 p-0 min-h-screen flex flex-col">
+<body class="tarjeta-web bg-white text-aesa-text font-display m-0 p-0 min-h-screen flex flex-col">
+
+  <div class="oscuridad"></div>
+  <div class="linterna"></div>
 
   <!-- Loading Screen -->
   <div id="loadingOverlay"
-    class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
-    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
-    <h2 class="text-center text-aesa-dark text-xl font-semibold">Cargando Portal...</h2>
-    <p class="w-1/3 text-center text-gray-500 text-sm mt-2">Obteniendo documentos más recientes</p>
+    class="fixed inset-0 bg-aesa-dark z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="loader ease-linear rounded-full border-4 border-t-4 border-aesa-gray h-12 w-12 mb-4"></div>
+    <h2 class="text-center text-white text-xl font-semibold">Cargando Portal...</h2>
+    <p class="w-1/3 text-center text-gray-300 text-sm mt-2">Obteniendo documentos más recientes</p>
   </div>
 
   <header
@@ -57,7 +60,7 @@
 
     <!-- Hero Section (Comunicados - Carousel) - Always Visible -->
     <section id="heroSection"
-      class="hidden relative rounded-xl overflow-hidden shadow-xl bg-aesa-dark group h-48 md:h-64">
+      class="hidden relative rounded-xl overflow-hidden shadow-xl bg-aesa-dark group h-48 md:h-64 border border-white/80">
       <!-- Carousel items Injected via JS -->
       <div id="carouselContainer" class="w-full h-full relative"></div>
       <!-- Carousel Indicators -->
@@ -68,11 +71,11 @@
     <div id="dashboardView" class="hidden">
       <div class="flex items-end gap-2 mb-4">
         <h2
-          class="text-xl font-bold font-condensed text-aesa-dark uppercase tracking-wide border-l-4 border-aesa-blue pl-3">
+          class="inline-flex items-center text-xl font-bold font-condensed text-white uppercase tracking-wide border-l-4 border-aesa-blue pl-3 pr-3 py-1 rounded-r-md bg-black/45 backdrop-blur-[1px] shadow-md">
           Explorar por Categorías
         </h2>
       </div>
-      <div id="categoryButtonsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div id="categoryButtonsGrid" class="grid grid-cols-2 gap-4 md:gap-6">
         <!-- Injected via JS -->
       </div>
     </div>
@@ -86,13 +89,14 @@
           <span class="material-icons text-sm">arrow_back</span>
           Volver
         </button>
-        <h2 id="currentCategoryTitle" class="text-2xl font-bold font-condensed text-aesa-dark uppercase tracking-wide">
+        <h2 id="currentCategoryTitle"
+          class="inline-flex items-center text-2xl font-bold font-condensed text-white uppercase tracking-wide border-l-4 border-aesa-blue pl-3 pr-3 py-1 rounded-r-md bg-black/45 backdrop-blur-[1px] shadow-md">
           <!-- Updated via JS -->
         </h2>
       </div>
 
       <!-- Cards Grid -->
-      <div id="cardsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div id="cardsGrid" class="grid grid-cols-2 gap-4">
         <!-- Injected via JS -->
       </div>
     </div>
@@ -118,13 +122,6 @@
       <div class="bg-aesa-blue px-6 py-4 flex items-center gap-4">
         <h3 id="modalTitle" class="text-white text-xl font-bold font-condensed flex-grow leading-tight">Título del
           Documento</h3>
-
-        <a id="modalLink" href="#" target="_blank"
-          class="hidden items-center gap-1.5 text-aesa-blue bg-white hover:bg-gray-50 px-3 py-1 rounded-full text-[10px] font-bold transition-all duration-300 shadow-md hover:shadow-xl hover:scale-105 uppercase tracking-wide whitespace-nowrap group">
-          <span class="material-icons text-xs group-hover:rotate-12 transition-transform">visibility</span>
-          CLICK AQUI<br>PARA VER
-        </a>
-
         <button id="closeModal"
           class="text-white hover:bg-black/20 rounded-full p-1 transition-colors flex items-center justify-center shrink-0">
           <span class="material-icons">close</span>
@@ -152,8 +149,13 @@
             <div>
               <h4 class="text-sm font-bold text-aesa-dark uppercase tracking-wide mb-2">Descripción</h4>
               <div class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                <p id="modalDescription" class="text-gray-600 text-sm leading-relaxed"></p>
+                <div id="modalDescription" class="text-gray-600 text-sm leading-relaxed whitespace-pre-line"></div>
               </div>
+              <a id="modalLink" href="#" target="_blank"
+                class="hidden mt-4 w-full sm:w-auto justify-center items-center gap-2 px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider text-white bg-aesa-blue hover:bg-blue-900 shadow-md hover:shadow-xl transition-all duration-300 cta-click">
+                <span class="material-icons text-sm">ads_click</span>
+                CLICK AQUI
+              </a>
             </div>
           </div>
         </div>
@@ -185,7 +187,7 @@
 
       <!-- Inline Search Results -->
       <div id="searchResultsOverlay"
-        class="flex-grow overflow-y-auto custom-scrollbar pb-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 content-start">
+        class="flex-grow overflow-y-auto custom-scrollbar pb-10 grid grid-cols-2 gap-4 content-start">
         <!-- Results injected here -->
         <div class="col-span-full text-center text-gray-500 mt-20">
           <span class="material-icons text-6xl mb-4 opacity-50 text-aesa-blue">manage_search</span>
@@ -199,3 +201,8 @@
 </body>
 
 </html>
+
+
+
+
+
