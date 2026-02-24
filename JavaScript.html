@@ -1,4 +1,4 @@
-<script>
+﻿<script>
   // --- Config ---
   const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?auto=format&fit=crop&q=80&w=800"; // Generic Industrial
 
@@ -19,6 +19,10 @@
   let currentSlide = 0;
   let touchStartX = 0;
   let touchEndX = 0;
+  let searchTimeout = null; // Variable para Debounce
+  let currentCategoryItems = []; // Para Paginación
+  let displayedItemsCount = 0; // Para Paginación
+  const ITEMS_PER_PAGE = 12; // Para Paginación
 
   // --- Initialization ---
   document.addEventListener('DOMContentLoaded', () => {
@@ -33,12 +37,13 @@
     document.getElementById('modal').addEventListener('click', (e) => {
       if (e.target.id === 'modal') closeModal();
     });
-    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    document.getElementById('searchInput').addEventListener('input', handleSearchDebounced);
     initGlobalLanternEffect();
 
   });
 
   function initGlobalLanternEffect() {
+    if (window.innerWidth < 768) return; // SOLO DESKTOP
     const target = document.body;
     if (!target) return;
 
@@ -69,6 +74,7 @@
   }
 
   function applyLanternEffect(element) {
+    if (window.innerWidth < 768) return; // SOLO DESKTOP
     const updateLantern = (clientX, clientY) => {
       const rect = element.getBoundingClientRect();
       const x = clientX - rect.left;
@@ -179,23 +185,25 @@
 
       slide.innerHTML = `
                  <div class="relative w-full h-full cursor-pointer">
-                    <img src="${item.LINK_FOTO || FALLBACK_IMAGE}" alt="Comunicado" class="w-full h-full object-cover" onerror="this.src='${FALLBACK_IMAGE}'">
+                    <img src="${item.LINK_FOTO || FALLBACK_IMAGE}" alt="Comunicado" loading="lazy" class="w-full h-full object-cover" onerror="this.src='${FALLBACK_IMAGE}'">
                     
-                    <div class="absolute inset-0 z-20 flex flex-col justify-center px-6 md:px-12 max-w-4xl">
-                        <span class="inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full bg-aesa-blue text-white text-[10px] font-bold uppercase tracking-wider mb-2 shadow-sm animate-pulse">
-                            <span class="material-icons text-[10px]">campaign</span> 
-                            Comunicado
-                        </span>
-                        <h2 class="text-xl md:text-3xl font-bold text-white mb-2 leading-tight font-condensed line-clamp-1">
-                            ${item.TITULO}
-                        </h2>
-                        <p class="text-gray-300 text-xs md:text-sm line-clamp-2 max-w-2xl mb-3">
-                            ${item.DESCRIPCION_CORTA}
-                        </p>
-                        <button class="bg-white text-aesa-dark hover:bg-gray-100 font-bold py-1.5 px-4 rounded text-xs transition-all flex items-center gap-1 shadow-md self-start">
+                    <div class="absolute inset-0 z-20 flex flex-col justify-end items-start px-6 md:px-12 pb-5 md:pb-7 max-w-4xl">
+                        <button class="absolute top-4 right-4 bg-white text-aesa-dark hover:bg-gray-100 font-bold py-1.5 px-4 rounded text-xs transition-all flex items-center gap-1 shadow-md">
                             LEER MÁS
                             <span class="material-icons text-[10px]">arrow_forward</span>
                         </button>
+                        <span class="absolute top-4 left-6 md:left-12 inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full bg-red-700 text-white text-[10px] font-bold uppercase tracking-wider mb-2 shadow-sm animate-pulse">
+                            <span class="material-icons text-[10px]">campaign</span> 
+                            Comunicado
+                        </span>
+                        <div class="self-start max-w-2xl translate-y-2 md:translate-y-3">
+                        <h2 class="bg-black/50 rounded-md px-3 py-1.5 self-start max-w-2xl text-xl md:text-3xl font-bold text-white mb-1 leading-[0.6] font-condensed line-clamp-1">
+                                ${item.TITULO}
+                            </h2>
+                            <p class="bg-black/50 rounded-md px-3 py-1.5 self-start max-w-2xl text-gray-200 text-xs md:text-sm line-clamp-2 mb-0 leading-[0.7]">
+                                ${item.DESCRIPCION_CORTA}
+                            </p>
+                        </div>
                     </div>
                 </div>
             `;
@@ -203,7 +211,7 @@
 
       // Indicator
       const dot = document.createElement('button');
-      dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${index === 0 ? 'bg-aesa-blue w-4' : 'bg-white/50 hover:bg-white'}`;
+      dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${index === 0 ? 'bg-red-700 w-4' : 'bg-white/50 hover:bg-white'}`;
       dot.onclick = (e) => {
         e.stopPropagation();
         goToSlide(index);
@@ -267,7 +275,7 @@
     currentSlide = index;
     slides[currentSlide].classList.remove('carousel-hidden');
     slides[currentSlide].classList.remove('opacity-0');
-    dots[currentSlide].className = 'w-4 h-2 rounded-full bg-aesa-blue transition-all duration-300';
+    dots[currentSlide].className = 'w-4 h-2 rounded-full bg-red-700 transition-all duration-300';
   }
 
   // --- Navigation Logic ---
@@ -319,17 +327,46 @@
 
     document.getElementById('currentCategoryTitle').textContent = categoryName;
 
-    const items = groupedData[categoryName];
+    currentCategoryItems = groupedData[categoryName] || [];
+    displayedItemsCount = 0;
     const grid = document.getElementById('cardsGrid');
     grid.innerHTML = '';
 
-    items.forEach((item, index) => {
+    // Create Load More Button Container if it doesn't exist
+    let loadMoreContainer = document.getElementById('loadMoreContainer');
+    if (!loadMoreContainer) {
+      loadMoreContainer = document.createElement('div');
+      loadMoreContainer.id = 'loadMoreContainer';
+      loadMoreContainer.className = 'col-span-full flex justify-center mt-8 mb-4';
+      detailView.appendChild(loadMoreContainer);
+    } else {
+      loadMoreContainer.innerHTML = '';
+    }
+
+    loadMoreItems();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function loadMoreItems() {
+    const grid = document.getElementById('cardsGrid');
+    const loadMoreContainer = document.getElementById('loadMoreContainer');
+
+    const nextItems = currentCategoryItems.slice(displayedItemsCount, displayedItemsCount + ITEMS_PER_PAGE);
+
+    nextItems.forEach((item, index) => {
       const card = createCard(item);
       card.classList.add('card-anim');
       card.style.animationDelay = `${index * 0.05}s`;
       grid.appendChild(card);
     });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    displayedItemsCount += nextItems.length;
+
+    if (displayedItemsCount >= currentCategoryItems.length) {
+      loadMoreContainer.innerHTML = ''; // Hide button if all elements are shown
+    } else {
+      loadMoreContainer.innerHTML = `<button onclick="loadMoreItems()" class="bg-gray-100/50 hover:bg-gray-200/80 text-aesa-blue font-bold px-8 py-2.5 rounded-full border-2 border-aesa-blue transition-colors duration-300 shadow-md transform hover:scale-105">Cargar más documentos...</button>`;
+    }
   }
 
   function showDashboard() {
@@ -365,7 +402,7 @@
 
     div.innerHTML = `
             <div class="h-28 overflow-hidden relative bg-gray-100">
-                <img src="${imgUrl}" alt="${item.TITULO}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='${FALLBACK_IMAGE}'">
+                <img src="${imgUrl}" alt="${item.TITULO}" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='${FALLBACK_IMAGE}'">
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
             </div>
             <div class="p-3 flex flex-col flex-grow bg-white">
@@ -389,6 +426,13 @@
   }
 
   // --- Interaction Functions ---
+
+  function handleSearchDebounced(e) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      handleSearch(e);
+    }, 350); // 350ms Debounce
+  }
 
   function handleSearch(e) {
     const term = e.target.value.toLowerCase().trim();
@@ -456,11 +500,20 @@
     }, 500);
   }
 
+  function sanitizeHTML(str) {
+    if (!str) return '';
+    // Elimina tags <script>, eventos 'on' y el prefijo 'javascript:'
+    return str.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/\bon\w+\s*=/gi, '')
+      .replace(/javascript:/gi, '#');
+  }
+
   function renderDescriptionContent(rawDescription, category) {
     const descEl = document.getElementById('modalDescription');
     if (!descEl) return;
 
-    const value = String(rawDescription || "Sin descripción disponible.");
+    let value = String(rawDescription || "Sin descripción disponible.");
+    value = sanitizeHTML(value);
     const normalizedCategory = String(category || "").trim().toUpperCase();
 
     if (normalizedCategory === 'PAC') {
@@ -674,4 +727,3 @@
     if (e.target.id === 'searchOverlay') closeSearch();
   });
 </script>
-

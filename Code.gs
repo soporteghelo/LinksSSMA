@@ -8,6 +8,16 @@ function doGet() {
 
 function getActiveData() {
   try {
+    const cache = CacheService.getScriptCache();
+    const CACHE_KEY = "DB_DOCUMENTOS_CACHE";
+    const cachedData = cache.get(CACHE_KEY);
+
+    if (cachedData) {
+      Logger.log('[DEBUG] Datos retornados desde la caché.');
+      return JSON.parse(cachedData);
+    }
+    
+    Logger.log('[DEBUG] No hay caché. Consultando Google Sheets...');
     const sheetId = '1-Yi2nfl7wI_OORzTpdrMCMdjXvrYVPQ_aVaVdMTaGlM';
     const sheetName = 'DB_DOCUMENTOS';
     
@@ -80,6 +90,10 @@ function getActiveData() {
       Logger.log('[WARN] No se encontraron datos activos para retornar.');
     }
     
+    // Guardar en la caché por 5 minutos (300 segundos)
+    Logger.log('[DEBUG] Guardando datos procesados en la caché por 5 minutos.');
+    cache.put(CACHE_KEY, JSON.stringify(mappedData), 300);
+
     return mappedData;
       
   } catch (e) {

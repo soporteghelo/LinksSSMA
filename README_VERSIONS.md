@@ -1,0 +1,36 @@
+# Historial de Versiones (Changelog)
+
+Este documento contiene un resumen de las versiones del proyecto registradas en GitHub (commits y estado de sincronización).
+
+## Estado Actual (Local)
+* **Rama actual:** `main`
+* **Sincronización:** Al día (Up to date) con `origin/main`.
+* **Cambios sin confirmar:** Ninguno (Recién commiteados).
+
+---
+
+## Versiones (Commits)
+
+### 🔹 Versión 2.0 (Local / Pending Push)
+* **Commit:** *(Generando)*
+* **Fecha:** 2026-02-23
+* **Autor:** soporteghelo
+* **Estado:** **Commit Local** - Pendiente de subir a GitHub (Push).
+* **Descripción:** 
+  > v2.0: Gran actualización de rendimiento y UX.
+  > - **Backend:** Añadido `CacheService` en `Code.gs` (5 mins de TTL) para evitar quota limits.
+  > - **Frontend (JS & UI):** Búsqueda optimizada con *Debounce* (350ms); imágenes con *Lazy Loading*; renderizado progresivo (paginación de tarjetas) en categorías; efecto de hover linterna desactivado para móviles. Sanitización XSS básica.
+  > - **Documentación:** Fusión de `README_IMAGENES.md` dentro de `README.md` junto con nuevas 'Buenas Prácticas'.
+  > - **Preview:** Script local para generar 200 items de prueba en `Preview.html` probando carga masiva.
+
+---
+
+### 🔹 Versión Anterior
+* **Commit:** `91180ab`
+* **Fecha:** 2026-02-21
+* **Autor:** soporteghelo
+* **Estado:** **Subido a GitHub (Pushed)** - Rama `origin/main`.
+* **Descripción:** 
+  > Mejora modal, header HTML/PAC y ajustes de UI. Version Estable.
+
+*(Nota: Este archivo se irá actualizando conforme se agreguen nuevos commits y se envíen al repositorio remoto).*
