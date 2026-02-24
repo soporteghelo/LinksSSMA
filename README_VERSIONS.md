@@ -11,6 +11,18 @@ Este documento contiene un resumen de las versiones del proyecto registradas en 
 
 ## Versiones (Commits)
 
+### 🔹 Versión 3.0 (Pushed)
+* **Commit:** `dbf98af`
+* **Fecha:** 2026-02-24
+* **Autor:** soporteghelo
+* **Estado:** **Subido a GitHub (Pushed)** - Esta es la versión que actualmente se encuentra en el repositorio remoto (`origin/main`).
+* **Descripción:** 
+  > v3.0: Añadida funcionalidad de Zoom de Imágenes (Pinch-to-zoom).
+  > - **Frontend (JS & UI):** Integración de modal de zoom en `Index.html` y `Preview.html`. El botón de lupa (`zoom_in`) ahora es permanentemente visible en color institucional sobre las resoluciones de fotos.
+  > - **Interactividad:** Adición de eventos `wheel`, `touchstart`, `touchmove`, `mousedown`, etc., en `JavaScript.html` y el sub-script de `Preview.html` para permitir pellizcar, acercar, alejar (exponencialmente hasta 4x) y arrastrar la vista renderizada sobre la pantalla.
+
+---
+
 ### 🔹 Versión 2.0 (Pushed)
 * **Commit:** `e50cfe6`
 * **Fecha:** 2026-02-23
