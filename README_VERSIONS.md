@@ -11,6 +11,20 @@ Este documento contiene un resumen de las versiones del proyecto registradas en 
 
 ## Versiones (Commits)
 
+### 🔹 Versión 4.0 (Pushed)
+* **Commit:** `(pendiente)`
+* **Fecha:** 2026-02-24
+* **Autor:** soporteghelo
+* **Estado:** **Subido a GitHub (Pushed)**
+* **Descripción:**
+  > v4.0: Optimizaciones de UI móvil, zoom instantáneo y mejoras de tarjetas de categoría.
+  > - **Header Responsivo:** Reducción de tamaño del logo y texto en pantallas pequeñas. El botón EMERGENCIA muestra sólo el ícono en móvil muy angosto (`sm:inline`).
+  > - **Zoom Instantáneo:** Removida la clase `transition-transform duration-300` del `#zoomModalImage` en `Index.html` y `Preview.html` para hacer el pinch-to-zoom inmediato.
+  > - **Auto-scaling de Títulos:** Implementada lógica JS (`setTimeout`) que reduce el `font-size` del título de cada tarjeta de categoría hasta que cabe en una línea, evitando desbordamientos.
+  > - **Etiqueta renombrada:** "Elementos" reemplazado por "Items" en el conteo de los bloques de categoría (`JavaScript.html`, `Preview.html`).
+
+---
+
 ### 🔹 Versión 3.0 (Pushed)
 * **Commit:** `dbf98af`
 * **Fecha:** 2026-02-24

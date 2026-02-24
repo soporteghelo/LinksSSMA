@@ -310,20 +310,37 @@
       btn.onclick = () => showCategoryDetail(cat);
 
       btn.innerHTML = `
-                <div class="h-full flex flex-col justify-between min-w-0 pr-6">
-                    <h3 class="font-bold text-xl text-aesa-dark font-condensed uppercase tracking-wide group-hover:text-aesa-blue transition-colors leading-tight break-words whitespace-normal group-title-clamp pr-0">${cat}</h3>
-                    <div class="flex items-center gap-3 min-w-0">
-                        <div class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
-                            <span class="material-icons text-amber-500 text-[22px] leading-none">folder</span>
-                        </div>
-                        <p class="text-slate-600 text-sm leading-tight font-medium">${count} Elementos</p>
-                    </div>
-                </div>
-                <span class="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 group-hover:text-aesa-blue group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
-            `;
+      btn.innerHTML = `
+        < div class="h-full flex flex-col justify-between min-w-0 pr-6" >
+          <h3 class="font-bold text-lg md:text-xl font-display text-aesa-dark group-hover:text-aesa-blue transition-colors uppercase tracking-tight whitespace-nowrap overflow-hidden category-title min-w-0 pr-0">
+            ${cat}
+          </h3>
+          <div class="flex items-center gap-3 min-w-0 mt-2">
+            <div class="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0 group-hover:bg-aesa-gray transition-colors">
+              <span class="material-icons text-amber-500 text-[22px] group-hover:scale-110 transition-transform duration-300 leading-none">folder</span>
+            </div>
+            <p class="text-slate-600 text-sm leading-tight font-medium">${count} Items</p>
+          </div>
+        </div >
+        <span class="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 group-hover:text-aesa-blue group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
+      `;
       applyLanternEffect(btn);
       container.appendChild(btn);
     });
+
+    // Auto-scale category titles to prevent line breaks
+    setTimeout(() => {
+      const titles = container.querySelectorAll('.category-title');
+      titles.forEach(title => {
+        let size = parseFloat(window.getComputedStyle(title).fontSize) || 16;
+        title.style.fontSize = size + 'px';
+        // Decrease font size as long as content horizontally overflows
+        while (title.scrollWidth > title.clientWidth && size > 10) {
+          size -= 0.5;
+          title.style.fontSize = size + 'px';
+        }
+      });
+    }, 10);
   }
 
   function showCategoryDetail(categoryName) {
@@ -363,7 +380,7 @@
     nextItems.forEach((item, index) => {
       const card = createCard(item);
       card.classList.add('card-anim');
-      card.style.animationDelay = `${index * 0.05}s`;
+      card.style.animationDelay = `${ index * 0.05 } s`;
       grid.appendChild(card);
     });
 
@@ -372,7 +389,7 @@
     if (displayedItemsCount >= currentCategoryItems.length) {
       loadMoreContainer.innerHTML = ''; // Hide button if all elements are shown
     } else {
-      loadMoreContainer.innerHTML = `<button onclick="loadMoreItems()" class="bg-gray-100/50 hover:bg-gray-200/80 text-aesa-blue font-bold px-8 py-2.5 rounded-full border-2 border-aesa-blue transition-colors duration-300 shadow-md transform hover:scale-105">Cargar más documentos...</button>`;
+      loadMoreContainer.innerHTML = `< button onclick = "loadMoreItems()" class="bg-gray-100/50 hover:bg-gray-200/80 text-aesa-blue font-bold px-8 py-2.5 rounded-full border-2 border-aesa-blue transition-colors duration-300 shadow-md transform hover:scale-105" > Cargar más documentos...</button > `;
     }
   }
 
@@ -402,13 +419,13 @@
     let descHtml = item.DESCRIPCION_CORTA;
 
     if (highlightTerm) {
-      const regex = new RegExp(`(${highlightTerm})`, 'gi');
+      const regex = new RegExp(`(${ highlightTerm })`, 'gi');
       titleHtml = titleHtml.replace(regex, '<mark>$1</mark>');
       descHtml = descHtml.replace(regex, '<mark>$1</mark>');
     }
 
     div.innerHTML = `
-            <div class="h-28 overflow-hidden relative bg-gray-100">
+    < div class= "h-28 overflow-hidden relative bg-gray-100" >
                 <img src="${imgUrl}" alt="${item.TITULO}" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='${FALLBACK_IMAGE}'">
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
             </div>
@@ -447,11 +464,11 @@
 
     if (term === '') {
       resultsContainer.innerHTML = `
-            <div class="col-span-full text-center text-gray-500 mt-20">
+      < div class= "col-span-full text-center text-gray-500 mt-20" >
                 <span class="material-icons text-6xl mb-4 opacity-50">manage_search</span>
                 <p class="text-xl">Escribe para comenzar a buscar...</p>
-            </div>
-        `;
+            </div >
+      `;
       return;
     }
 
@@ -471,7 +488,7 @@
         };
 
         card.classList.add('card-anim');
-        card.style.animationDelay = `${foundCount * 0.05}s`;
+        card.style.animationDelay = `${ foundCount * 0.05}s`;
         resultsContainer.appendChild(card);
         foundCount++;
       }
@@ -479,12 +496,12 @@
 
     if (foundCount === 0) {
       resultsContainer.innerHTML = `
-            <div class="col-span-full text-center text-gray-500 mt-20">
+    < div class= "col-span-full text-center text-gray-500 mt-20" >
                 <span class="material-icons text-6xl mb-4 opacity-50">search_off</span>
                 <p class="text-xl">No se encontraron resultados para "${term}"</p>
                 <p class="text-sm mt-2">Intenta con otros términos.</p>
-            </div>
-        `;
+            </div >
+      `;
     }
   }
 
@@ -554,71 +571,71 @@
       const tableHtml = tableEl ? tableEl.outerHTML : (doc.body ? doc.body.innerHTML : value);
 
       descEl.innerHTML = `
-        <style>
-          #modalDescription .pac-html-content{
-            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
-            background:linear-gradient(135deg,#f4f6f9,#e9eef5);
-            padding:8px 10px;
-            border-radius:12px;
-          }
-          #modalDescription .pac-note{
-            margin:0 0 6px 0;
-            color:#1f2937;
-            font-weight:600;
-            font-size:14px;
-          }
-          #modalDescription .pac-table-container{
-            max-width:100%;
-            margin:auto;
-            overflow-x:auto;
-          }
-          #modalDescription .pac-table-container table{
-            width:100%;
-            border-collapse:collapse;
-            background:#fff;
-            border-radius:12px;
-            overflow:hidden;
-            box-shadow:0 8px 20px rgba(0,0,0,0.08);
-            margin-top:0;
-          }
-          #modalDescription .pac-table-container thead{
-            background:#1f2937;
-            color:#fff;
-          }
-          #modalDescription .pac-table-container th,
-          #modalDescription .pac-table-container td{
-            padding:12px;
-            text-align:center;
-            font-size:13px;
-          }
-          #modalDescription .pac-table-container tbody tr{
-            transition:0.3s ease;
-          }
-          #modalDescription .pac-table-container tbody tr:hover{
-            background:#f3f4f6;
-          }
-          #modalDescription .pac-table-container .btn{
-            display:inline-block;
-            padding:7px 12px;
-            border-radius:8px;
-            text-decoration:none;
-            font-weight:600;
-            font-size:12px;
-            color:#fff;
-            transition:0.3s ease;
-          }
-          #modalDescription .pac-table-container .btn-examen{ background:#2563eb; }
-          #modalDescription .pac-table-container .btn-examen:hover{ background:#1d4ed8; }
-          #modalDescription .pac-table-container .btn-presentacion{ background:#10b981; }
-          #modalDescription .pac-table-container .btn-presentacion:hover{ background:#059669; }
-          #modalDescription .pac-table-container .btn-video{ background:#f59e0b; }
-          #modalDescription .pac-table-container .btn-video:hover{ background:#d97706; }
-        </style>
-        <div class="pac-html-content">
-          <p class="pac-note">A continuación las capacitaciones del mes:</p>
-          <div class="pac-table-container">${tableHtml}</div>
-        </div>
-      `;
+      < style >
+      #modalDescription.pac - html - content{
+        font- family: 'Segoe UI', Tahoma, Geneva, Verdana, sans - serif;
+    background: linear - gradient(135deg, #f4f6f9, #e9eef5);
+    padding: 8px 10px;
+    border - radius: 12px;
+  }
+  #modalDescription.pac - note{
+    margin: 0 0 6px 0;
+    color:#1f2937;
+    font - weight: 600;
+    font - size: 14px;
+  }
+  #modalDescription.pac - table - container{
+    max - width: 100 %;
+    margin: auto;
+    overflow - x: auto;
+  }
+  #modalDescription.pac - table - container table{
+    width: 100 %;
+    border - collapse: collapse;
+    background: #fff;
+    border - radius: 12px;
+    overflow: hidden;
+    box - shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    margin - top: 0;
+  }
+  #modalDescription.pac - table - container thead{
+    background:#1f2937;
+    color: #fff;
+  }
+  #modalDescription.pac - table - container th,
+    #modalDescription.pac - table - container td{
+    padding: 12px;
+    text - align: center;
+    font - size: 13px;
+  }
+  #modalDescription.pac - table - container tbody tr{
+    transition: 0.3s ease;
+  }
+  #modalDescription.pac - table - container tbody tr:hover{
+    background: #f3f4f6;
+  }
+  #modalDescription.pac - table - container.btn{
+    display: inline - block;
+    padding: 7px 12px;
+    border - radius: 8px;
+    text - decoration: none;
+    font - weight: 600;
+    font - size: 12px;
+    color: #fff;
+    transition: 0.3s ease;
+  }
+  #modalDescription.pac - table - container.btn - examen{ background:#2563eb; }
+  #modalDescription.pac - table - container.btn - examen:hover{ background:#1d4ed8; }
+  #modalDescription.pac - table - container.btn - presentacion{ background:#10b981; }
+  #modalDescription.pac - table - container.btn - presentacion:hover{ background:#059669; }
+  #modalDescription.pac - table - container.btn - video{ background: #f59e0b; }
+  #modalDescription.pac - table - container.btn - video:hover{ background: #d97706; }
+        </style >
+    <div class="pac-html-content">
+      <p class="pac-note">A continuación las capacitaciones del mes:</p>
+      <div class="pac-table-container">${tableHtml}</div>
+    </div>
+  `;
       return;
     }
 
@@ -642,7 +659,7 @@
 
       // Keep original order of text + HTML as found in body content.
       const bodyContent = doc.body ? doc.body.innerHTML : value;
-      descEl.innerHTML = `<style>${scopedStyles}</style><div class="modal-html-content">${bodyContent}</div>`;
+      descEl.innerHTML = `< style > ${ scopedStyles }</style > <div class="modal-html-content">${bodyContent}</div>`;
       return;
     }
 
@@ -826,7 +843,7 @@
         translateY = 0;
       }
 
-      zoomImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+      zoomImage.style.transform = `translate(${ translateX }px, ${ translateY }px) scale(${ currentZoom })`;
 
       // Update cursor based on zoom state
       if (currentZoom > 1) {
