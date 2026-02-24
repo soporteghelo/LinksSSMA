@@ -43,8 +43,13 @@
         </div>
       </div>
 
-      <!-- Search Trigger (Header) -->
-      <div class="flex items-center justify-end flex-1">
+      <!-- Header Actions -->
+      <div class="flex items-center justify-end flex-1 gap-2 md:gap-4 lg:gap-6">
+        <button onclick="openEmergencyModal()"
+          class="flex items-center gap-1.5 md:gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-5 rounded-lg transition-all shadow-md animate-pulse border-2 border-red-700/50 hover:scale-105 group h-[36px] md:h-[42px] max-w-[140px] md:max-w-none">
+          <span class="material-icons text-sm md:text-lg">warning</span>
+          <span class="text-xs md:text-sm font-condensed tracking-wider truncate">EMERGENCIA</span>
+        </button>
         <button onclick="openSearch()"
           class="bg-gray-100 hover:bg-gray-200 text-aesa-dark p-2 rounded-full transition-colors flex items-center justify-center shrink-0">
           <span class="material-icons">search</span>
@@ -136,7 +141,15 @@
 
         <!-- Scrollable Content -->
         <div class="overflow-y-auto">
-          <img id="modalImage" src="" alt="Imagen detalle" class="w-full h-48 sm:h-64 object-cover hidden">
+          <!-- Contenedor de Imagen con Botón Zoom -->
+          <div class="relative group hidden" id="modalImageContainer">
+            <img id="modalImage" src="" alt="Imagen detalle" class="w-full h-48 sm:h-64 object-cover">
+            <!-- Botón de Zoom con color institucional #2b3a62 -->
+            <button onclick="openZoomModal()"
+              class="absolute bottom-3 right-3 bg-[#2b3a62] hover:bg-blue-900 text-white p-2 rounded-full transition-all duration-300 shadow-xl flex items-center justify-center transform hover:scale-110 z-10 opacity-90 hover:opacity-100">
+              <span class="material-icons">zoom_in</span>
+            </button>
+          </div>
 
           <div class="p-6 space-y-4">
             <!-- Date -->
@@ -197,12 +210,37 @@
     </div>
   </div>
 
-  <?!= HtmlService.createHtmlOutputFromFile('JavaScript').getContent(); ?>
+  <!-- Modal de Zoom de Imagen -->
+  <div id="zoomModal"
+    class="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-[90] hidden transition-all duration-300 backdrop-blur-md opacity-0 p-4">
+    <button onclick="closeZoomModal()"
+      class="absolute top-4 right-4 text-white/70 hover:text-white bg-black/50 hover:bg-black p-2 rounded-full transition-all z-50 flex items-center justify-center flex-shrink-0 cursor-pointer shadow-lg hover:scale-110 border border-white/20">
+      <span class="material-icons text-3xl">close</span>
+    </button>
+    <div class="relative w-full h-full max-w-7xl mx-auto flex flex-col justify-center items-center">
+      <img id="zoomModalImage" src="" alt="Imagen Ampliada"
+        class="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-transform duration-300 scale-95"
+        style="cursor: zoom-out;" onclick="closeZoomModal()">
+    </div>
+  </div>
+
+  <!-- Modal de Emergencia -->
+  <div id="emergencyModal"
+    class="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-[80] hidden transition-all duration-300 backdrop-blur-md opacity-0">
+    <!-- Modal de Emergencia -->
+    <div id="emergencyModal"
+      class="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-[80] hidden transition-all duration-300 backdrop-blur-md opacity-0 p-2 md:p-6">
+      <div class="relative w-full h-full max-w-6xl mx-auto flex flex-col justify-center items-center">
+        <button onclick="closeEmergencyModal()"
+          class="absolute top-0 right-0 md:-top-2 md:-right-2 text-white/70 hover:text-red-500 bg-black/50 hover:bg-black p-2 rounded-full transition-all z-50 flex items-center justify-center shrink-0 cursor-pointer shadow-lg hover:outline hover:outline-2 hover:outline-red-500">
+          <span class="material-icons text-3xl md:text-4xl">close</span>
+        </button>
+        <img id="emergencyImage" src="" alt="Flujograma de Emergencia"
+          class="max-w-full max-h-full object-contain rounded-xl shadow-2xl border-2 md:border-4 border-red-600/50 block">
+      </div>
+    </div>
+
+    <?!= HtmlService.createHtmlOutputFromFile('JavaScript').getContent(); ?>
 </body>
 
 </html>
-
-
-
-
-

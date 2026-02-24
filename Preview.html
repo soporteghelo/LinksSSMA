@@ -168,6 +168,7 @@
         }
 
         @keyframes ctaPulse {
+
             0%,
             100% {
                 transform: translateY(0);
@@ -328,10 +329,15 @@
                         Documental</span>
                 </div>
             </div>
-            <div class="flex items-center justify-end flex-1">
+            <div class="flex items-center justify-end flex-1 gap-2 md:gap-4 lg:gap-6">
+                <button onclick="openEmergencyModal()"
+                    class="flex items-center gap-1.5 md:gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-1.5 px-3 md:py-2 md:px-5 rounded-lg transition-all shadow-md animate-pulse border-2 border-red-700/50 hover:scale-105 group h-[36px] md:h-[42px] max-w-[140px] md:max-w-none">
+                    <span class="material-icons text-sm md:text-lg">warning</span>
+                    <span class="text-xs md:text-sm font-condensed tracking-wider truncate">EMERGENCIA</span>
+                </button>
                 <button onclick="openSearch()"
-                    class="bg-gray-100 hover:bg-gray-200 text-aesa-dark p-2 rounded-full transition-colors flex items-center justify-center shrink-0">
-                    <span class="material-icons">search</span>
+                    class="bg-gray-100 hover:bg-gray-200 text-aesa-dark p-2 md:p-2.5 rounded-full transition-all flex items-center justify-center shrink-0 hover:scale-105 h-[36px] w-[36px] md:h-[42px] md:w-[42px]">
+                    <span class="material-icons md:text-[24px]">search</span>
                 </button>
             </div>
         </div>
@@ -360,7 +366,8 @@
                     <span class="material-icons text-sm">arrow_back</span> Volver
                 </button>
                 <h2 id="currentCategoryTitle"
-                    class="inline-flex items-center text-2xl font-bold font-condensed text-white uppercase tracking-wide border-l-4 border-aesa-blue pl-3 pr-3 py-1 rounded-r-md bg-black/45 backdrop-blur-[1px] shadow-md"></h2>
+                    class="inline-flex items-center text-2xl font-bold font-condensed text-white uppercase tracking-wide border-l-4 border-aesa-blue pl-3 pr-3 py-1 rounded-r-md bg-black/45 backdrop-blur-[1px] shadow-md">
+                </h2>
             </div>
             <div id="cardsGrid" class="grid grid-cols-2 gap-4"></div>
         </div>
@@ -381,14 +388,22 @@
             <div class="bg-aesa-blue px-6 py-4 flex items-center gap-4">
                 <h3 id="modalTitle" class="text-white text-xl font-bold font-condensed flex-grow leading-tight">Título
                     del Documento</h3>
-<button id="closeModal"
+                <button id="closeModal"
                     class="text-white hover:bg-black/20 rounded-full p-1 transition-colors flex items-center justify-center shrink-0">
                     <span class="material-icons">close</span>
                 </button>
             </div>
             <div class="flex flex-col max-h-[85vh]">
                 <div class="overflow-y-auto">
-                    <img id="modalImage" src="" alt="Imagen detalle" class="w-full h-48 sm:h-64 object-cover hidden">
+                    <!-- Contenedor de Imagen con Botón Zoom -->
+                    <div class="relative group hidden" id="modalImageContainer">
+                        <img id="modalImage" src="" alt="Imagen detalle" class="w-full h-48 sm:h-64 object-cover">
+                        <!-- Botón de Zoom con color institucional #2b3a62 -->
+                        <button onclick="openZoomModal()"
+                            class="absolute bottom-3 right-3 bg-[#2b3a62] hover:bg-blue-900 text-white p-2 rounded-full transition-all duration-300 shadow-xl flex items-center justify-center transform hover:scale-110 z-10 opacity-90 hover:opacity-100">
+                            <span class="material-icons">zoom_in</span>
+                        </button>
+                    </div>
                     <div class="p-6 space-y-4">
                         <div
                             class="flex items-center gap-2 text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">
@@ -438,1837 +453,1864 @@
         </div>
     </div>
 
+    <!-- Modal de Zoom de Imagen -->
+    <div id="zoomModal"
+        class="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-[90] hidden transition-all duration-300 backdrop-blur-md opacity-0 p-4">
+        <button onclick="closeZoomModal()"
+            class="absolute top-4 right-4 text-white/70 hover:text-white bg-black/50 hover:bg-black p-2 rounded-full transition-all z-50 flex items-center justify-center flex-shrink-0 cursor-pointer shadow-lg hover:scale-110 border border-white/20">
+            <span class="material-icons text-3xl">close</span>
+        </button>
+        <div class="relative w-full h-full max-w-7xl mx-auto flex flex-col justify-center items-center">
+            <img id="zoomModalImage" src="" alt="Imagen Ampliada"
+                class="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-transform duration-300 scale-95"
+                style="cursor: zoom-out;" onclick="closeZoomModal()">
+        </div>
+    </div>
+
+    <!-- Modal de Emergencia -->
+    <div id="emergencyModal"
+        class="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-[80] hidden transition-all duration-300 backdrop-blur-md opacity-0 p-2 md:p-6">
+        <div class="relative w-full h-full max-w-6xl mx-auto flex flex-col justify-center items-center">
+            <button onclick="closeEmergencyModal()"
+                class="absolute top-0 right-0 md:-top-2 md:-right-2 text-white/70 hover:text-red-500 bg-black/50 hover:bg-black p-2 rounded-full transition-all z-50 flex items-center justify-center shrink-0 cursor-pointer shadow-lg hover:outline hover:outline-2 hover:outline-red-500">
+                <span class="material-icons text-3xl md:text-4xl">close</span>
+            </button>
+            <img id="emergencyImage" src="" alt="Flujograma de Emergencia"
+                class="max-w-full max-h-full object-contain rounded-xl shadow-2xl border-2 md:border-4 border-red-600/50 block">
+        </div>
+    </div>
+
     <script>
         // --- MOCK DATA FOR PREVIEW ---
         const MOCK_DATA = [
-  {
-    "TITULO": "Protocolo de Seguridad en Socavón",
-    "CATEGORIA": "Comunicado",
-    "DESCRIPCION_CORTA": "Actualización de medidas de emergencia para el nivel 4.",
-    "LINK_FOTO": "https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=1200",
-    "FECHA": "2024-10-25",
-    "LINK_INFORMACION": "https://example.com/pdf",
-    "ORDEN": 1
-  },
-  {
-    "TITULO": "Mantenimiento Preventivo Jumbos",
-    "CATEGORIA": "Mantenimiento",
-    "DESCRIPCION_CORTA": "Guía de revisión técnica diaria.",
-    "LINK_FOTO": "",
-    "FECHA": "2024-10-20",
-    "LINK_INFORMACION": "",
-    "ORDEN": 2
-  },
-  {
-    "TITULO": "Plan Anual de Capacitación - PAC",
-    "CATEGORIA": "PAC",
-    "DESCRIPCION_CORTA": "Contenido HTML de tabla para pruebas PAC.",
-    "DESCRIPCION_LARGA": "<table><thead><tr><th>Título</th><th>Examen</th><th>Presentación</th><th>Video</th></tr></thead><tbody><tr><td><strong>Prevención y protección contra incendios</strong></td><td><a href=\"https://forms.gle/yXzQsCutkTcsdi9c6\" target=\"_blank\">Rendir</a></td><td><a href=\"https://forms.gle/yXzQsCutkTcsdi9c6\" target=\"_blank\">Ver</a></td><td><a href=\"https://forms.gle/yXzQsCutkTcsdi9c6\" target=\"_blank\">Ver</a></td></tr></tbody></table>",
-    "FECHA": "2026-02-21",
-    "LINK_INFORMACION": "",
-    "ORDEN": 1
-  },
-  {
-    "TITULO": "Instructivo Avanzado 1000",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1000.",
-    "LINK_FOTO": "https://picsum.photos/seed/1000/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 10
-  },
-  {
-    "TITULO": "Protocolo Avanzado 1001",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1001.",
-    "LINK_FOTO": "https://picsum.photos/seed/1001/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 11
-  },
-  {
-    "TITULO": "Guía Ambiental 1002",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1002.",
-    "LINK_FOTO": "https://picsum.photos/seed/1002/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 12
-  },
-  {
-    "TITULO": "Estándar Correctivo 1003",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1003.",
-    "LINK_FOTO": "https://picsum.photos/seed/1003/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 13
-  },
-  {
-    "TITULO": "Protocolo Estratégico 1004",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1004.",
-    "LINK_FOTO": "https://picsum.photos/seed/1004/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 14
-  },
-  {
-    "TITULO": "Protocolo Especializado 1005",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1005.",
-    "LINK_FOTO": "https://picsum.photos/seed/1005/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 15
-  },
-  {
-    "TITULO": "Checklist Seguro 1006",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1006.",
-    "LINK_FOTO": "https://picsum.photos/seed/1006/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 16
-  },
-  {
-    "TITULO": "Plan Técnico 1007",
-    "CATEGORIA": "Capacitación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1007.",
-    "LINK_FOTO": "https://picsum.photos/seed/1007/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 17
-  },
-  {
-    "TITULO": "Protocolo Técnico 1008",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1008.",
-    "LINK_FOTO": "https://picsum.photos/seed/1008/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 18
-  },
-  {
-    "TITULO": "Plan Básico 1009",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1009.",
-    "LINK_FOTO": "https://picsum.photos/seed/1009/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 19
-  },
-  {
-    "TITULO": "Checklist Básico 1010",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1010.",
-    "LINK_FOTO": "https://picsum.photos/seed/1010/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 20
-  },
-  {
-    "TITULO": "Instructivo Especializado 1011",
-    "CATEGORIA": "Capacitación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1011.",
-    "LINK_FOTO": "https://picsum.photos/seed/1011/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 21
-  },
-  {
-    "TITULO": "Plan Operativo 1012",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1012.",
-    "LINK_FOTO": "https://picsum.photos/seed/1012/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 22
-  },
-  {
-    "TITULO": "Formulario Preventivo 1013",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1013.",
-    "LINK_FOTO": "https://picsum.photos/seed/1013/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 23
-  },
-  {
-    "TITULO": "Reglamento Operativo 1014",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1014.",
-    "LINK_FOTO": "https://picsum.photos/seed/1014/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 24
-  },
-  {
-    "TITULO": "Estándar Básico 1015",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1015.",
-    "LINK_FOTO": "https://picsum.photos/seed/1015/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 25
-  },
-  {
-    "TITULO": "Plan Básico 1016",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1016.",
-    "LINK_FOTO": "https://picsum.photos/seed/1016/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 26
-  },
-  {
-    "TITULO": "Plan Estratégico 1017",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1017.",
-    "LINK_FOTO": "https://picsum.photos/seed/1017/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 27
-  },
-  {
-    "TITULO": "Procedimiento Básico 1018",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1018.",
-    "LINK_FOTO": "https://picsum.photos/seed/1018/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 28
-  },
-  {
-    "TITULO": "Estándar Seguro 1019",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1019.",
-    "LINK_FOTO": "https://picsum.photos/seed/1019/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 29
-  },
-  {
-    "TITULO": "Estándar Especializado 1020",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1020.",
-    "LINK_FOTO": "https://picsum.photos/seed/1020/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 30
-  },
-  {
-    "TITULO": "Reglamento Operativo 1021",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1021.",
-    "LINK_FOTO": "https://picsum.photos/seed/1021/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 31
-  },
-  {
-    "TITULO": "Estándar Ambiental 1022",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1022.",
-    "LINK_FOTO": "https://picsum.photos/seed/1022/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 32
-  },
-  {
-    "TITULO": "Procedimiento Correctivo 1023",
-    "CATEGORIA": "Capacitación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1023.",
-    "LINK_FOTO": "https://picsum.photos/seed/1023/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 33
-  },
-  {
-    "TITULO": "Procedimiento Técnico 1024",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1024.",
-    "LINK_FOTO": "https://picsum.photos/seed/1024/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 34
-  },
-  {
-    "TITULO": "Protocolo Seguro 1025",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1025.",
-    "LINK_FOTO": "https://picsum.photos/seed/1025/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 35
-  },
-  {
-    "TITULO": "Checklist Técnico 1026",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1026.",
-    "LINK_FOTO": "https://picsum.photos/seed/1026/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 36
-  },
-  {
-    "TITULO": "Checklist Avanzado 1027",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1027.",
-    "LINK_FOTO": "https://picsum.photos/seed/1027/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 37
-  },
-  {
-    "TITULO": "Formulario Ambiental 1028",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1028.",
-    "LINK_FOTO": "https://picsum.photos/seed/1028/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 38
-  },
-  {
-    "TITULO": "Manual Técnico 1029",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1029.",
-    "LINK_FOTO": "https://picsum.photos/seed/1029/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 39
-  },
-  {
-    "TITULO": "Checklist Estratégico 1030",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1030.",
-    "LINK_FOTO": "https://picsum.photos/seed/1030/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 40
-  },
-  {
-    "TITULO": "Guía Correctivo 1031",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1031.",
-    "LINK_FOTO": "https://picsum.photos/seed/1031/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 41
-  },
-  {
-    "TITULO": "Protocolo Ambiental 1032",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1032.",
-    "LINK_FOTO": "https://picsum.photos/seed/1032/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 42
-  },
-  {
-    "TITULO": "Reglamento Correctivo 1033",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1033.",
-    "LINK_FOTO": "https://picsum.photos/seed/1033/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 43
-  },
-  {
-    "TITULO": "Formulario Ambiental 1034",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1034.",
-    "LINK_FOTO": "https://picsum.photos/seed/1034/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 44
-  },
-  {
-    "TITULO": "Formulario Preventivo 1035",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1035.",
-    "LINK_FOTO": "https://picsum.photos/seed/1035/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 45
-  },
-  {
-    "TITULO": "Estándar Técnico 1036",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1036.",
-    "LINK_FOTO": "https://picsum.photos/seed/1036/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 46
-  },
-  {
-    "TITULO": "Estándar Avanzado 1037",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1037.",
-    "LINK_FOTO": "https://picsum.photos/seed/1037/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 47
-  },
-  {
-    "TITULO": "Instructivo Avanzado 1038",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1038.",
-    "LINK_FOTO": "https://picsum.photos/seed/1038/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 48
-  },
-  {
-    "TITULO": "Formulario Básico 1039",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1039.",
-    "LINK_FOTO": "https://picsum.photos/seed/1039/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 49
-  },
-  {
-    "TITULO": "Protocolo Básico 1040",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1040.",
-    "LINK_FOTO": "https://picsum.photos/seed/1040/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 50
-  },
-  {
-    "TITULO": "Instructivo Avanzado 1041",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1041.",
-    "LINK_FOTO": "https://picsum.photos/seed/1041/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 51
-  },
-  {
-    "TITULO": "Manual Operativo 1042",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1042.",
-    "LINK_FOTO": "https://picsum.photos/seed/1042/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 52
-  },
-  {
-    "TITULO": "Manual Ambiental 1043",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1043.",
-    "LINK_FOTO": "https://picsum.photos/seed/1043/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 53
-  },
-  {
-    "TITULO": "Procedimiento Estratégico 1044",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1044.",
-    "LINK_FOTO": "https://picsum.photos/seed/1044/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 54
-  },
-  {
-    "TITULO": "Protocolo Preventivo 1045",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1045.",
-    "LINK_FOTO": "https://picsum.photos/seed/1045/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 55
-  },
-  {
-    "TITULO": "Guía Seguro 1046",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1046.",
-    "LINK_FOTO": "https://picsum.photos/seed/1046/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 56
-  },
-  {
-    "TITULO": "Reglamento Básico 1047",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1047.",
-    "LINK_FOTO": "https://picsum.photos/seed/1047/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 57
-  },
-  {
-    "TITULO": "Protocolo Preventivo 1048",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1048.",
-    "LINK_FOTO": "https://picsum.photos/seed/1048/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 58
-  },
-  {
-    "TITULO": "Protocolo Ambiental 1049",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1049.",
-    "LINK_FOTO": "https://picsum.photos/seed/1049/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 59
-  },
-  {
-    "TITULO": "Instructivo Operativo 1050",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1050.",
-    "LINK_FOTO": "https://picsum.photos/seed/1050/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 60
-  },
-  {
-    "TITULO": "Procedimiento Básico 1051",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1051.",
-    "LINK_FOTO": "https://picsum.photos/seed/1051/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 61
-  },
-  {
-    "TITULO": "Checklist Estratégico 1052",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1052.",
-    "LINK_FOTO": "https://picsum.photos/seed/1052/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 62
-  },
-  {
-    "TITULO": "Instructivo Básico 1053",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1053.",
-    "LINK_FOTO": "https://picsum.photos/seed/1053/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 63
-  },
-  {
-    "TITULO": "Protocolo Operativo 1054",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1054.",
-    "LINK_FOTO": "https://picsum.photos/seed/1054/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 64
-  },
-  {
-    "TITULO": "Guía Técnico 1055",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1055.",
-    "LINK_FOTO": "https://picsum.photos/seed/1055/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 65
-  },
-  {
-    "TITULO": "Plan Preventivo 1056",
-    "CATEGORIA": "Capacitación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1056.",
-    "LINK_FOTO": "https://picsum.photos/seed/1056/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 66
-  },
-  {
-    "TITULO": "Procedimiento Seguro 1057",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1057.",
-    "LINK_FOTO": "https://picsum.photos/seed/1057/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 67
-  },
-  {
-    "TITULO": "Instructivo Seguro 1058",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1058.",
-    "LINK_FOTO": "https://picsum.photos/seed/1058/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 68
-  },
-  {
-    "TITULO": "Formulario Ambiental 1059",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1059.",
-    "LINK_FOTO": "https://picsum.photos/seed/1059/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 69
-  },
-  {
-    "TITULO": "Plan Estratégico 1060",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1060.",
-    "LINK_FOTO": "https://picsum.photos/seed/1060/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 70
-  },
-  {
-    "TITULO": "Instructivo Básico 1061",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1061.",
-    "LINK_FOTO": "https://picsum.photos/seed/1061/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 71
-  },
-  {
-    "TITULO": "Guía Básico 1062",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1062.",
-    "LINK_FOTO": "https://picsum.photos/seed/1062/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 72
-  },
-  {
-    "TITULO": "Estándar Avanzado 1063",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1063.",
-    "LINK_FOTO": "https://picsum.photos/seed/1063/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 73
-  },
-  {
-    "TITULO": "Guía Preventivo 1064",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1064.",
-    "LINK_FOTO": "https://picsum.photos/seed/1064/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 74
-  },
-  {
-    "TITULO": "Guía Especializado 1065",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1065.",
-    "LINK_FOTO": "https://picsum.photos/seed/1065/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 75
-  },
-  {
-    "TITULO": "Estándar Ambiental 1066",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1066.",
-    "LINK_FOTO": "https://picsum.photos/seed/1066/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 76
-  },
-  {
-    "TITULO": "Reglamento Avanzado 1067",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1067.",
-    "LINK_FOTO": "https://picsum.photos/seed/1067/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 77
-  },
-  {
-    "TITULO": "Formulario Seguro 1068",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1068.",
-    "LINK_FOTO": "https://picsum.photos/seed/1068/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 78
-  },
-  {
-    "TITULO": "Checklist Operativo 1069",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1069.",
-    "LINK_FOTO": "https://picsum.photos/seed/1069/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 79
-  },
-  {
-    "TITULO": "Instructivo Seguro 1070",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1070.",
-    "LINK_FOTO": "https://picsum.photos/seed/1070/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 80
-  },
-  {
-    "TITULO": "Manual Seguro 1071",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1071.",
-    "LINK_FOTO": "https://picsum.photos/seed/1071/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 81
-  },
-  {
-    "TITULO": "Formulario Correctivo 1072",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1072.",
-    "LINK_FOTO": "https://picsum.photos/seed/1072/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 82
-  },
-  {
-    "TITULO": "Manual Operativo 1073",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1073.",
-    "LINK_FOTO": "https://picsum.photos/seed/1073/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 83
-  },
-  {
-    "TITULO": "Procedimiento Estratégico 1074",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1074.",
-    "LINK_FOTO": "https://picsum.photos/seed/1074/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 84
-  },
-  {
-    "TITULO": "Instructivo Seguro 1075",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1075.",
-    "LINK_FOTO": "https://picsum.photos/seed/1075/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 85
-  },
-  {
-    "TITULO": "Protocolo Ambiental 1076",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1076.",
-    "LINK_FOTO": "https://picsum.photos/seed/1076/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 86
-  },
-  {
-    "TITULO": "Estándar Básico 1077",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1077.",
-    "LINK_FOTO": "https://picsum.photos/seed/1077/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 87
-  },
-  {
-    "TITULO": "Checklist Especializado 1078",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1078.",
-    "LINK_FOTO": "https://picsum.photos/seed/1078/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 88
-  },
-  {
-    "TITULO": "Guía Especializado 1079",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1079.",
-    "LINK_FOTO": "https://picsum.photos/seed/1079/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 89
-  },
-  {
-    "TITULO": "Estándar Avanzado 1080",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1080.",
-    "LINK_FOTO": "https://picsum.photos/seed/1080/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 90
-  },
-  {
-    "TITULO": "Formulario Preventivo 1081",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1081.",
-    "LINK_FOTO": "https://picsum.photos/seed/1081/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 91
-  },
-  {
-    "TITULO": "Plan Estratégico 1082",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1082.",
-    "LINK_FOTO": "https://picsum.photos/seed/1082/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 92
-  },
-  {
-    "TITULO": "Manual Ambiental 1083",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1083.",
-    "LINK_FOTO": "https://picsum.photos/seed/1083/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 93
-  },
-  {
-    "TITULO": "Plan Operativo 1084",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1084.",
-    "LINK_FOTO": "https://picsum.photos/seed/1084/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 94
-  },
-  {
-    "TITULO": "Plan Especializado 1085",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1085.",
-    "LINK_FOTO": "https://picsum.photos/seed/1085/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 95
-  },
-  {
-    "TITULO": "Instructivo Operativo 1086",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1086.",
-    "LINK_FOTO": "https://picsum.photos/seed/1086/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 96
-  },
-  {
-    "TITULO": "Protocolo Básico 1087",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1087.",
-    "LINK_FOTO": "https://picsum.photos/seed/1087/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 97
-  },
-  {
-    "TITULO": "Protocolo Ambiental 1088",
-    "CATEGORIA": "Capacitación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1088.",
-    "LINK_FOTO": "https://picsum.photos/seed/1088/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 98
-  },
-  {
-    "TITULO": "Instructivo Especializado 1089",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1089.",
-    "LINK_FOTO": "https://picsum.photos/seed/1089/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 99
-  },
-  {
-    "TITULO": "Estándar Ambiental 1090",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1090.",
-    "LINK_FOTO": "https://picsum.photos/seed/1090/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 100
-  },
-  {
-    "TITULO": "Manual Seguro 1091",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1091.",
-    "LINK_FOTO": "https://picsum.photos/seed/1091/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 101
-  },
-  {
-    "TITULO": "Plan Operativo 1092",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1092.",
-    "LINK_FOTO": "https://picsum.photos/seed/1092/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 102
-  },
-  {
-    "TITULO": "Procedimiento Especializado 1093",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1093.",
-    "LINK_FOTO": "https://picsum.photos/seed/1093/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 103
-  },
-  {
-    "TITULO": "Plan Correctivo 1094",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1094.",
-    "LINK_FOTO": "https://picsum.photos/seed/1094/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 104
-  },
-  {
-    "TITULO": "Estándar Estratégico 1095",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1095.",
-    "LINK_FOTO": "https://picsum.photos/seed/1095/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 105
-  },
-  {
-    "TITULO": "Formulario Operativo 1096",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1096.",
-    "LINK_FOTO": "https://picsum.photos/seed/1096/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 106
-  },
-  {
-    "TITULO": "Guía Avanzado 1097",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1097.",
-    "LINK_FOTO": "https://picsum.photos/seed/1097/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 107
-  },
-  {
-    "TITULO": "Plan Seguro 1098",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1098.",
-    "LINK_FOTO": "https://picsum.photos/seed/1098/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 108
-  },
-  {
-    "TITULO": "Instructivo Operativo 1099",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1099.",
-    "LINK_FOTO": "https://picsum.photos/seed/1099/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 109
-  },
-  {
-    "TITULO": "Protocolo Correctivo 1100",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1100.",
-    "LINK_FOTO": "https://picsum.photos/seed/1100/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 110
-  },
-  {
-    "TITULO": "Manual Seguro 1101",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1101.",
-    "LINK_FOTO": "https://picsum.photos/seed/1101/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 111
-  },
-  {
-    "TITULO": "Manual Seguro 1102",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1102.",
-    "LINK_FOTO": "https://picsum.photos/seed/1102/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 112
-  },
-  {
-    "TITULO": "Manual Correctivo 1103",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1103.",
-    "LINK_FOTO": "https://picsum.photos/seed/1103/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 113
-  },
-  {
-    "TITULO": "Protocolo Operativo 1104",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1104.",
-    "LINK_FOTO": "https://picsum.photos/seed/1104/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 114
-  },
-  {
-    "TITULO": "Protocolo Estratégico 1105",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1105.",
-    "LINK_FOTO": "https://picsum.photos/seed/1105/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 115
-  },
-  {
-    "TITULO": "Plan Seguro 1106",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1106.",
-    "LINK_FOTO": "https://picsum.photos/seed/1106/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 116
-  },
-  {
-    "TITULO": "Procedimiento Estratégico 1107",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1107.",
-    "LINK_FOTO": "https://picsum.photos/seed/1107/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 117
-  },
-  {
-    "TITULO": "Procedimiento Básico 1108",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1108.",
-    "LINK_FOTO": "https://picsum.photos/seed/1108/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 118
-  },
-  {
-    "TITULO": "Instructivo Correctivo 1109",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1109.",
-    "LINK_FOTO": "https://picsum.photos/seed/1109/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 119
-  },
-  {
-    "TITULO": "Plan Operativo 1110",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1110.",
-    "LINK_FOTO": "https://picsum.photos/seed/1110/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 120
-  },
-  {
-    "TITULO": "Guía Técnico 1111",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1111.",
-    "LINK_FOTO": "https://picsum.photos/seed/1111/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 121
-  },
-  {
-    "TITULO": "Manual Correctivo 1112",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1112.",
-    "LINK_FOTO": "https://picsum.photos/seed/1112/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 122
-  },
-  {
-    "TITULO": "Checklist Técnico 1113",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1113.",
-    "LINK_FOTO": "https://picsum.photos/seed/1113/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 123
-  },
-  {
-    "TITULO": "Instructivo Avanzado 1114",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1114.",
-    "LINK_FOTO": "https://picsum.photos/seed/1114/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 124
-  },
-  {
-    "TITULO": "Guía Estratégico 1115",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1115.",
-    "LINK_FOTO": "https://picsum.photos/seed/1115/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 125
-  },
-  {
-    "TITULO": "Protocolo Operativo 1116",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1116.",
-    "LINK_FOTO": "https://picsum.photos/seed/1116/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 126
-  },
-  {
-    "TITULO": "Manual Básico 1117",
-    "CATEGORIA": "Capacitación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1117.",
-    "LINK_FOTO": "https://picsum.photos/seed/1117/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 127
-  },
-  {
-    "TITULO": "Protocolo Seguro 1118",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1118.",
-    "LINK_FOTO": "https://picsum.photos/seed/1118/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 128
-  },
-  {
-    "TITULO": "Plan Preventivo 1119",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1119.",
-    "LINK_FOTO": "https://picsum.photos/seed/1119/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 129
-  },
-  {
-    "TITULO": "Manual Estratégico 1120",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1120.",
-    "LINK_FOTO": "https://picsum.photos/seed/1120/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 130
-  },
-  {
-    "TITULO": "Estándar Ambiental 1121",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1121.",
-    "LINK_FOTO": "https://picsum.photos/seed/1121/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 131
-  },
-  {
-    "TITULO": "Procedimiento Técnico 1122",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1122.",
-    "LINK_FOTO": "https://picsum.photos/seed/1122/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 132
-  },
-  {
-    "TITULO": "Formulario Estratégico 1123",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1123.",
-    "LINK_FOTO": "https://picsum.photos/seed/1123/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 133
-  },
-  {
-    "TITULO": "Plan Técnico 1124",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1124.",
-    "LINK_FOTO": "https://picsum.photos/seed/1124/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 134
-  },
-  {
-    "TITULO": "Plan Estratégico 1125",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1125.",
-    "LINK_FOTO": "https://picsum.photos/seed/1125/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 135
-  },
-  {
-    "TITULO": "Procedimiento Básico 1126",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1126.",
-    "LINK_FOTO": "https://picsum.photos/seed/1126/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 136
-  },
-  {
-    "TITULO": "Procedimiento Especializado 1127",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1127.",
-    "LINK_FOTO": "https://picsum.photos/seed/1127/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 137
-  },
-  {
-    "TITULO": "Protocolo Ambiental 1128",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1128.",
-    "LINK_FOTO": "https://picsum.photos/seed/1128/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 138
-  },
-  {
-    "TITULO": "Reglamento Básico 1129",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1129.",
-    "LINK_FOTO": "https://picsum.photos/seed/1129/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 139
-  },
-  {
-    "TITULO": "Plan Básico 1130",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1130.",
-    "LINK_FOTO": "https://picsum.photos/seed/1130/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 140
-  },
-  {
-    "TITULO": "Instructivo Correctivo 1131",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1131.",
-    "LINK_FOTO": "https://picsum.photos/seed/1131/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 141
-  },
-  {
-    "TITULO": "Guía Ambiental 1132",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1132.",
-    "LINK_FOTO": "https://picsum.photos/seed/1132/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 142
-  },
-  {
-    "TITULO": "Guía Operativo 1133",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1133.",
-    "LINK_FOTO": "https://picsum.photos/seed/1133/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 143
-  },
-  {
-    "TITULO": "Checklist Técnico 1134",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1134.",
-    "LINK_FOTO": "https://picsum.photos/seed/1134/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 144
-  },
-  {
-    "TITULO": "Manual Correctivo 1135",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1135.",
-    "LINK_FOTO": "https://picsum.photos/seed/1135/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 145
-  },
-  {
-    "TITULO": "Plan Operativo 1136",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1136.",
-    "LINK_FOTO": "https://picsum.photos/seed/1136/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 146
-  },
-  {
-    "TITULO": "Procedimiento Estratégico 1137",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1137.",
-    "LINK_FOTO": "https://picsum.photos/seed/1137/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 147
-  },
-  {
-    "TITULO": "Estándar Preventivo 1138",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1138.",
-    "LINK_FOTO": "https://picsum.photos/seed/1138/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 148
-  },
-  {
-    "TITULO": "Procedimiento Operativo 1139",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1139.",
-    "LINK_FOTO": "https://picsum.photos/seed/1139/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 149
-  },
-  {
-    "TITULO": "Guía Preventivo 1140",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1140.",
-    "LINK_FOTO": "https://picsum.photos/seed/1140/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 150
-  },
-  {
-    "TITULO": "Instructivo Operativo 1141",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1141.",
-    "LINK_FOTO": "https://picsum.photos/seed/1141/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 151
-  },
-  {
-    "TITULO": "Checklist Especializado 1142",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1142.",
-    "LINK_FOTO": "https://picsum.photos/seed/1142/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 152
-  },
-  {
-    "TITULO": "Formulario Estratégico 1143",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1143.",
-    "LINK_FOTO": "https://picsum.photos/seed/1143/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 153
-  },
-  {
-    "TITULO": "Checklist Preventivo 1144",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1144.",
-    "LINK_FOTO": "https://picsum.photos/seed/1144/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 154
-  },
-  {
-    "TITULO": "Checklist Operativo 1145",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1145.",
-    "LINK_FOTO": "https://picsum.photos/seed/1145/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 155
-  },
-  {
-    "TITULO": "Checklist Ambiental 1146",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1146.",
-    "LINK_FOTO": "https://picsum.photos/seed/1146/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 156
-  },
-  {
-    "TITULO": "Procedimiento Correctivo 1147",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1147.",
-    "LINK_FOTO": "https://picsum.photos/seed/1147/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 157
-  },
-  {
-    "TITULO": "Estándar Técnico 1148",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1148.",
-    "LINK_FOTO": "https://picsum.photos/seed/1148/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 158
-  },
-  {
-    "TITULO": "Reglamento Básico 1149",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1149.",
-    "LINK_FOTO": "https://picsum.photos/seed/1149/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 159
-  },
-  {
-    "TITULO": "Procedimiento Básico 1150",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1150.",
-    "LINK_FOTO": "https://picsum.photos/seed/1150/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 160
-  },
-  {
-    "TITULO": "Checklist Estratégico 1151",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1151.",
-    "LINK_FOTO": "https://picsum.photos/seed/1151/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 161
-  },
-  {
-    "TITULO": "Estándar Especializado 1152",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1152.",
-    "LINK_FOTO": "https://picsum.photos/seed/1152/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 162
-  },
-  {
-    "TITULO": "Procedimiento Técnico 1153",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1153.",
-    "LINK_FOTO": "https://picsum.photos/seed/1153/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 163
-  },
-  {
-    "TITULO": "Instructivo Especializado 1154",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1154.",
-    "LINK_FOTO": "https://picsum.photos/seed/1154/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 164
-  },
-  {
-    "TITULO": "Reglamento Operativo 1155",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1155.",
-    "LINK_FOTO": "https://picsum.photos/seed/1155/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 165
-  },
-  {
-    "TITULO": "Protocolo Ambiental 1156",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1156.",
-    "LINK_FOTO": "https://picsum.photos/seed/1156/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 166
-  },
-  {
-    "TITULO": "Plan Operativo 1157",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1157.",
-    "LINK_FOTO": "https://picsum.photos/seed/1157/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 167
-  },
-  {
-    "TITULO": "Reglamento Especializado 1158",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1158.",
-    "LINK_FOTO": "https://picsum.photos/seed/1158/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 168
-  },
-  {
-    "TITULO": "Instructivo Estratégico 1159",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1159.",
-    "LINK_FOTO": "https://picsum.photos/seed/1159/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 169
-  },
-  {
-    "TITULO": "Instructivo Seguro 1160",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1160.",
-    "LINK_FOTO": "https://picsum.photos/seed/1160/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 170
-  },
-  {
-    "TITULO": "Instructivo Técnico 1161",
-    "CATEGORIA": "Capacitación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1161.",
-    "LINK_FOTO": "https://picsum.photos/seed/1161/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 171
-  },
-  {
-    "TITULO": "Protocolo Técnico 1162",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1162.",
-    "LINK_FOTO": "https://picsum.photos/seed/1162/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 172
-  },
-  {
-    "TITULO": "Plan Técnico 1163",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1163.",
-    "LINK_FOTO": "https://picsum.photos/seed/1163/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 173
-  },
-  {
-    "TITULO": "Instructivo Estratégico 1164",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1164.",
-    "LINK_FOTO": "https://picsum.photos/seed/1164/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 174
-  },
-  {
-    "TITULO": "Plan Correctivo 1165",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1165.",
-    "LINK_FOTO": "https://picsum.photos/seed/1165/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 175
-  },
-  {
-    "TITULO": "Checklist Correctivo 1166",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1166.",
-    "LINK_FOTO": "https://picsum.photos/seed/1166/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 176
-  },
-  {
-    "TITULO": "Guía Estratégico 1167",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1167.",
-    "LINK_FOTO": "https://picsum.photos/seed/1167/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 177
-  },
-  {
-    "TITULO": "Protocolo Especializado 1168",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1168.",
-    "LINK_FOTO": "https://picsum.photos/seed/1168/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 178
-  },
-  {
-    "TITULO": "Checklist Ambiental 1169",
-    "CATEGORIA": "Formatos",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1169.",
-    "LINK_FOTO": "https://picsum.photos/seed/1169/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 179
-  },
-  {
-    "TITULO": "Plan Básico 1170",
-    "CATEGORIA": "Capacitación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1170.",
-    "LINK_FOTO": "https://picsum.photos/seed/1170/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 180
-  },
-  {
-    "TITULO": "Procedimiento Básico 1171",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1171.",
-    "LINK_FOTO": "https://picsum.photos/seed/1171/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 181
-  },
-  {
-    "TITULO": "Manual Técnico 1172",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1172.",
-    "LINK_FOTO": "https://picsum.photos/seed/1172/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 182
-  },
-  {
-    "TITULO": "Reglamento Avanzado 1173",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1173.",
-    "LINK_FOTO": "https://picsum.photos/seed/1173/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 183
-  },
-  {
-    "TITULO": "Formulario Especializado 1174",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1174.",
-    "LINK_FOTO": "https://picsum.photos/seed/1174/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 184
-  },
-  {
-    "TITULO": "Guía Técnico 1175",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1175.",
-    "LINK_FOTO": "https://picsum.photos/seed/1175/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 185
-  },
-  {
-    "TITULO": "Plan Preventivo 1176",
-    "CATEGORIA": "IPERC",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1176.",
-    "LINK_FOTO": "https://picsum.photos/seed/1176/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 186
-  },
-  {
-    "TITULO": "Checklist Seguro 1177",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1177.",
-    "LINK_FOTO": "https://picsum.photos/seed/1177/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 187
-  },
-  {
-    "TITULO": "Plan Preventivo 1178",
-    "CATEGORIA": "Capacitación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1178.",
-    "LINK_FOTO": "https://picsum.photos/seed/1178/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 188
-  },
-  {
-    "TITULO": "Guía Ambiental 1179",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1179.",
-    "LINK_FOTO": "https://picsum.photos/seed/1179/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 189
-  },
-  {
-    "TITULO": "Formulario Preventivo 1180",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1180.",
-    "LINK_FOTO": "https://picsum.photos/seed/1180/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 190
-  },
-  {
-    "TITULO": "Manual Ambiental 1181",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1181.",
-    "LINK_FOTO": "https://picsum.photos/seed/1181/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 191
-  },
-  {
-    "TITULO": "Reglamento Operativo 1182",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1182.",
-    "LINK_FOTO": "https://picsum.photos/seed/1182/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 192
-  },
-  {
-    "TITULO": "Checklist Especializado 1183",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1183.",
-    "LINK_FOTO": "https://picsum.photos/seed/1183/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 193
-  },
-  {
-    "TITULO": "Plan Seguro 1184",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1184.",
-    "LINK_FOTO": "https://picsum.photos/seed/1184/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 194
-  },
-  {
-    "TITULO": "Checklist Operativo 1185",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1185.",
-    "LINK_FOTO": "https://picsum.photos/seed/1185/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 195
-  },
-  {
-    "TITULO": "Checklist Ambiental 1186",
-    "CATEGORIA": "Legislación",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1186.",
-    "LINK_FOTO": "https://picsum.photos/seed/1186/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 196
-  },
-  {
-    "TITULO": "Instructivo Técnico 1187",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1187.",
-    "LINK_FOTO": "https://picsum.photos/seed/1187/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 197
-  },
-  {
-    "TITULO": "Protocolo Técnico 1188",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1188.",
-    "LINK_FOTO": "https://picsum.photos/seed/1188/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 198
-  },
-  {
-    "TITULO": "Estándar Operativo 1189",
-    "CATEGORIA": "Examen",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1189.",
-    "LINK_FOTO": "https://picsum.photos/seed/1189/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 199
-  },
-  {
-    "TITULO": "Checklist Estratégico 1190",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1190.",
-    "LINK_FOTO": "https://picsum.photos/seed/1190/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 200
-  },
-  {
-    "TITULO": "Instructivo Seguro 1191",
-    "CATEGORIA": "Estándares",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1191.",
-    "LINK_FOTO": "https://picsum.photos/seed/1191/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 201
-  },
-  {
-    "TITULO": "Formulario Especializado 1192",
-    "CATEGORIA": "Manuales",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1192.",
-    "LINK_FOTO": "https://picsum.photos/seed/1192/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 202
-  },
-  {
-    "TITULO": "Checklist Avanzado 1193",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1193.",
-    "LINK_FOTO": "https://picsum.photos/seed/1193/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 203
-  },
-  {
-    "TITULO": "Reglamento Ambiental 1194",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1194.",
-    "LINK_FOTO": "https://picsum.photos/seed/1194/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 204
-  },
-  {
-    "TITULO": "Plan Correctivo 1195",
-    "CATEGORIA": "SGA",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1195.",
-    "LINK_FOTO": "https://picsum.photos/seed/1195/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 205
-  },
-  {
-    "TITULO": "Manual Operativo 1196",
-    "CATEGORIA": "Inspecciones",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1196.",
-    "LINK_FOTO": "https://picsum.photos/seed/1196/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 206
-  },
-  {
-    "TITULO": "Reglamento Estratégico 1197",
-    "CATEGORIA": "Auditorías",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1197.",
-    "LINK_FOTO": "https://picsum.photos/seed/1197/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 207
-  },
-  {
-    "TITULO": "Manual Avanzado 1198",
-    "CATEGORIA": "Reportes",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1198.",
-    "LINK_FOTO": "https://picsum.photos/seed/1198/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 208
-  },
-  {
-    "TITULO": "Guía Ambiental 1199",
-    "CATEGORIA": "PETS",
-    "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1199.",
-    "LINK_FOTO": "https://picsum.photos/seed/1199/600/300",
-    "FECHA": "2026-02-23",
-    "LINK_INFORMACION": "#",
-    "ORDEN": 209
-  }
-];
+            {
+                "TITULO": "Protocolo de Seguridad en Socavón",
+                "CATEGORIA": "Comunicado",
+                "DESCRIPCION_CORTA": "Actualización de medidas de emergencia para el nivel 4.",
+                "LINK_FOTO": "https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=1200",
+                "FECHA": "2024-10-25",
+                "LINK_INFORMACION": "https://example.com/pdf",
+                "ORDEN": 1
+            },
+            {
+                "TITULO": "Mantenimiento Preventivo Jumbos",
+                "CATEGORIA": "Mantenimiento",
+                "DESCRIPCION_CORTA": "Guía de revisión técnica diaria.",
+                "LINK_FOTO": "",
+                "FECHA": "2024-10-20",
+                "LINK_INFORMACION": "",
+                "ORDEN": 2
+            },
+            {
+                "TITULO": "Plan Anual de Capacitación - PAC",
+                "CATEGORIA": "PAC",
+                "DESCRIPCION_CORTA": "Contenido HTML de tabla para pruebas PAC.",
+                "DESCRIPCION_LARGA": "<table><thead><tr><th>Título</th><th>Examen</th><th>Presentación</th><th>Video</th></tr></thead><tbody><tr><td><strong>Prevención y protección contra incendios</strong></td><td><a href=\"https://forms.gle/yXzQsCutkTcsdi9c6\" target=\"_blank\">Rendir</a></td><td><a href=\"https://forms.gle/yXzQsCutkTcsdi9c6\" target=\"_blank\">Ver</a></td><td><a href=\"https://forms.gle/yXzQsCutkTcsdi9c6\" target=\"_blank\">Ver</a></td></tr></tbody></table>",
+                "FECHA": "2026-02-21",
+                "LINK_INFORMACION": "",
+                "ORDEN": 1
+            },
+            {
+                "TITULO": "Instructivo Avanzado 1000",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1000.",
+                "LINK_FOTO": "https://picsum.photos/seed/1000/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 10
+            },
+            {
+                "TITULO": "Protocolo Avanzado 1001",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1001.",
+                "LINK_FOTO": "https://picsum.photos/seed/1001/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 11
+            },
+            {
+                "TITULO": "Guía Ambiental 1002",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1002.",
+                "LINK_FOTO": "https://picsum.photos/seed/1002/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 12
+            },
+            {
+                "TITULO": "Estándar Correctivo 1003",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1003.",
+                "LINK_FOTO": "https://picsum.photos/seed/1003/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 13
+            },
+            {
+                "TITULO": "Protocolo Estratégico 1004",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1004.",
+                "LINK_FOTO": "https://picsum.photos/seed/1004/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 14
+            },
+            {
+                "TITULO": "Protocolo Especializado 1005",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1005.",
+                "LINK_FOTO": "https://picsum.photos/seed/1005/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 15
+            },
+            {
+                "TITULO": "Checklist Seguro 1006",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1006.",
+                "LINK_FOTO": "https://picsum.photos/seed/1006/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 16
+            },
+            {
+                "TITULO": "Plan Técnico 1007",
+                "CATEGORIA": "Capacitación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1007.",
+                "LINK_FOTO": "https://picsum.photos/seed/1007/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 17
+            },
+            {
+                "TITULO": "Protocolo Técnico 1008",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1008.",
+                "LINK_FOTO": "https://picsum.photos/seed/1008/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 18
+            },
+            {
+                "TITULO": "Plan Básico 1009",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1009.",
+                "LINK_FOTO": "https://picsum.photos/seed/1009/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 19
+            },
+            {
+                "TITULO": "Checklist Básico 1010",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1010.",
+                "LINK_FOTO": "https://picsum.photos/seed/1010/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 20
+            },
+            {
+                "TITULO": "Instructivo Especializado 1011",
+                "CATEGORIA": "Capacitación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1011.",
+                "LINK_FOTO": "https://picsum.photos/seed/1011/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 21
+            },
+            {
+                "TITULO": "Plan Operativo 1012",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1012.",
+                "LINK_FOTO": "https://picsum.photos/seed/1012/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 22
+            },
+            {
+                "TITULO": "Formulario Preventivo 1013",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1013.",
+                "LINK_FOTO": "https://picsum.photos/seed/1013/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 23
+            },
+            {
+                "TITULO": "Reglamento Operativo 1014",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1014.",
+                "LINK_FOTO": "https://picsum.photos/seed/1014/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 24
+            },
+            {
+                "TITULO": "Estándar Básico 1015",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1015.",
+                "LINK_FOTO": "https://picsum.photos/seed/1015/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 25
+            },
+            {
+                "TITULO": "Plan Básico 1016",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1016.",
+                "LINK_FOTO": "https://picsum.photos/seed/1016/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 26
+            },
+            {
+                "TITULO": "Plan Estratégico 1017",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1017.",
+                "LINK_FOTO": "https://picsum.photos/seed/1017/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 27
+            },
+            {
+                "TITULO": "Procedimiento Básico 1018",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1018.",
+                "LINK_FOTO": "https://picsum.photos/seed/1018/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 28
+            },
+            {
+                "TITULO": "Estándar Seguro 1019",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1019.",
+                "LINK_FOTO": "https://picsum.photos/seed/1019/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 29
+            },
+            {
+                "TITULO": "Estándar Especializado 1020",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1020.",
+                "LINK_FOTO": "https://picsum.photos/seed/1020/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 30
+            },
+            {
+                "TITULO": "Reglamento Operativo 1021",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1021.",
+                "LINK_FOTO": "https://picsum.photos/seed/1021/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 31
+            },
+            {
+                "TITULO": "Estándar Ambiental 1022",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1022.",
+                "LINK_FOTO": "https://picsum.photos/seed/1022/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 32
+            },
+            {
+                "TITULO": "Procedimiento Correctivo 1023",
+                "CATEGORIA": "Capacitación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1023.",
+                "LINK_FOTO": "https://picsum.photos/seed/1023/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 33
+            },
+            {
+                "TITULO": "Procedimiento Técnico 1024",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1024.",
+                "LINK_FOTO": "https://picsum.photos/seed/1024/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 34
+            },
+            {
+                "TITULO": "Protocolo Seguro 1025",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1025.",
+                "LINK_FOTO": "https://picsum.photos/seed/1025/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 35
+            },
+            {
+                "TITULO": "Checklist Técnico 1026",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1026.",
+                "LINK_FOTO": "https://picsum.photos/seed/1026/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 36
+            },
+            {
+                "TITULO": "Checklist Avanzado 1027",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1027.",
+                "LINK_FOTO": "https://picsum.photos/seed/1027/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 37
+            },
+            {
+                "TITULO": "Formulario Ambiental 1028",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1028.",
+                "LINK_FOTO": "https://picsum.photos/seed/1028/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 38
+            },
+            {
+                "TITULO": "Manual Técnico 1029",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1029.",
+                "LINK_FOTO": "https://picsum.photos/seed/1029/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 39
+            },
+            {
+                "TITULO": "Checklist Estratégico 1030",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1030.",
+                "LINK_FOTO": "https://picsum.photos/seed/1030/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 40
+            },
+            {
+                "TITULO": "Guía Correctivo 1031",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1031.",
+                "LINK_FOTO": "https://picsum.photos/seed/1031/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 41
+            },
+            {
+                "TITULO": "Protocolo Ambiental 1032",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1032.",
+                "LINK_FOTO": "https://picsum.photos/seed/1032/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 42
+            },
+            {
+                "TITULO": "Reglamento Correctivo 1033",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1033.",
+                "LINK_FOTO": "https://picsum.photos/seed/1033/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 43
+            },
+            {
+                "TITULO": "Formulario Ambiental 1034",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1034.",
+                "LINK_FOTO": "https://picsum.photos/seed/1034/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 44
+            },
+            {
+                "TITULO": "Formulario Preventivo 1035",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1035.",
+                "LINK_FOTO": "https://picsum.photos/seed/1035/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 45
+            },
+            {
+                "TITULO": "Estándar Técnico 1036",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1036.",
+                "LINK_FOTO": "https://picsum.photos/seed/1036/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 46
+            },
+            {
+                "TITULO": "Estándar Avanzado 1037",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1037.",
+                "LINK_FOTO": "https://picsum.photos/seed/1037/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 47
+            },
+            {
+                "TITULO": "Instructivo Avanzado 1038",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1038.",
+                "LINK_FOTO": "https://picsum.photos/seed/1038/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 48
+            },
+            {
+                "TITULO": "Formulario Básico 1039",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1039.",
+                "LINK_FOTO": "https://picsum.photos/seed/1039/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 49
+            },
+            {
+                "TITULO": "Protocolo Básico 1040",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1040.",
+                "LINK_FOTO": "https://picsum.photos/seed/1040/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 50
+            },
+            {
+                "TITULO": "Instructivo Avanzado 1041",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1041.",
+                "LINK_FOTO": "https://picsum.photos/seed/1041/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 51
+            },
+            {
+                "TITULO": "Manual Operativo 1042",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1042.",
+                "LINK_FOTO": "https://picsum.photos/seed/1042/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 52
+            },
+            {
+                "TITULO": "Manual Ambiental 1043",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1043.",
+                "LINK_FOTO": "https://picsum.photos/seed/1043/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 53
+            },
+            {
+                "TITULO": "Procedimiento Estratégico 1044",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1044.",
+                "LINK_FOTO": "https://picsum.photos/seed/1044/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 54
+            },
+            {
+                "TITULO": "Protocolo Preventivo 1045",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1045.",
+                "LINK_FOTO": "https://picsum.photos/seed/1045/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 55
+            },
+            {
+                "TITULO": "Guía Seguro 1046",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1046.",
+                "LINK_FOTO": "https://picsum.photos/seed/1046/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 56
+            },
+            {
+                "TITULO": "Reglamento Básico 1047",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1047.",
+                "LINK_FOTO": "https://picsum.photos/seed/1047/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 57
+            },
+            {
+                "TITULO": "Protocolo Preventivo 1048",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1048.",
+                "LINK_FOTO": "https://picsum.photos/seed/1048/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 58
+            },
+            {
+                "TITULO": "Protocolo Ambiental 1049",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1049.",
+                "LINK_FOTO": "https://picsum.photos/seed/1049/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 59
+            },
+            {
+                "TITULO": "Instructivo Operativo 1050",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1050.",
+                "LINK_FOTO": "https://picsum.photos/seed/1050/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 60
+            },
+            {
+                "TITULO": "Procedimiento Básico 1051",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1051.",
+                "LINK_FOTO": "https://picsum.photos/seed/1051/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 61
+            },
+            {
+                "TITULO": "Checklist Estratégico 1052",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1052.",
+                "LINK_FOTO": "https://picsum.photos/seed/1052/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 62
+            },
+            {
+                "TITULO": "Instructivo Básico 1053",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1053.",
+                "LINK_FOTO": "https://picsum.photos/seed/1053/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 63
+            },
+            {
+                "TITULO": "Protocolo Operativo 1054",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1054.",
+                "LINK_FOTO": "https://picsum.photos/seed/1054/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 64
+            },
+            {
+                "TITULO": "Guía Técnico 1055",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1055.",
+                "LINK_FOTO": "https://picsum.photos/seed/1055/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 65
+            },
+            {
+                "TITULO": "Plan Preventivo 1056",
+                "CATEGORIA": "Capacitación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1056.",
+                "LINK_FOTO": "https://picsum.photos/seed/1056/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 66
+            },
+            {
+                "TITULO": "Procedimiento Seguro 1057",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1057.",
+                "LINK_FOTO": "https://picsum.photos/seed/1057/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 67
+            },
+            {
+                "TITULO": "Instructivo Seguro 1058",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1058.",
+                "LINK_FOTO": "https://picsum.photos/seed/1058/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 68
+            },
+            {
+                "TITULO": "Formulario Ambiental 1059",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1059.",
+                "LINK_FOTO": "https://picsum.photos/seed/1059/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 69
+            },
+            {
+                "TITULO": "Plan Estratégico 1060",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1060.",
+                "LINK_FOTO": "https://picsum.photos/seed/1060/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 70
+            },
+            {
+                "TITULO": "Instructivo Básico 1061",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1061.",
+                "LINK_FOTO": "https://picsum.photos/seed/1061/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 71
+            },
+            {
+                "TITULO": "Guía Básico 1062",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1062.",
+                "LINK_FOTO": "https://picsum.photos/seed/1062/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 72
+            },
+            {
+                "TITULO": "Estándar Avanzado 1063",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1063.",
+                "LINK_FOTO": "https://picsum.photos/seed/1063/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 73
+            },
+            {
+                "TITULO": "Guía Preventivo 1064",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1064.",
+                "LINK_FOTO": "https://picsum.photos/seed/1064/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 74
+            },
+            {
+                "TITULO": "Guía Especializado 1065",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1065.",
+                "LINK_FOTO": "https://picsum.photos/seed/1065/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 75
+            },
+            {
+                "TITULO": "Estándar Ambiental 1066",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1066.",
+                "LINK_FOTO": "https://picsum.photos/seed/1066/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 76
+            },
+            {
+                "TITULO": "Reglamento Avanzado 1067",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1067.",
+                "LINK_FOTO": "https://picsum.photos/seed/1067/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 77
+            },
+            {
+                "TITULO": "Formulario Seguro 1068",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1068.",
+                "LINK_FOTO": "https://picsum.photos/seed/1068/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 78
+            },
+            {
+                "TITULO": "Checklist Operativo 1069",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1069.",
+                "LINK_FOTO": "https://picsum.photos/seed/1069/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 79
+            },
+            {
+                "TITULO": "Instructivo Seguro 1070",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1070.",
+                "LINK_FOTO": "https://picsum.photos/seed/1070/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 80
+            },
+            {
+                "TITULO": "Manual Seguro 1071",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1071.",
+                "LINK_FOTO": "https://picsum.photos/seed/1071/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 81
+            },
+            {
+                "TITULO": "Formulario Correctivo 1072",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1072.",
+                "LINK_FOTO": "https://picsum.photos/seed/1072/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 82
+            },
+            {
+                "TITULO": "Manual Operativo 1073",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1073.",
+                "LINK_FOTO": "https://picsum.photos/seed/1073/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 83
+            },
+            {
+                "TITULO": "Procedimiento Estratégico 1074",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1074.",
+                "LINK_FOTO": "https://picsum.photos/seed/1074/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 84
+            },
+            {
+                "TITULO": "Instructivo Seguro 1075",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1075.",
+                "LINK_FOTO": "https://picsum.photos/seed/1075/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 85
+            },
+            {
+                "TITULO": "Protocolo Ambiental 1076",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1076.",
+                "LINK_FOTO": "https://picsum.photos/seed/1076/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 86
+            },
+            {
+                "TITULO": "Estándar Básico 1077",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1077.",
+                "LINK_FOTO": "https://picsum.photos/seed/1077/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 87
+            },
+            {
+                "TITULO": "Checklist Especializado 1078",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1078.",
+                "LINK_FOTO": "https://picsum.photos/seed/1078/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 88
+            },
+            {
+                "TITULO": "Guía Especializado 1079",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1079.",
+                "LINK_FOTO": "https://picsum.photos/seed/1079/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 89
+            },
+            {
+                "TITULO": "Estándar Avanzado 1080",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1080.",
+                "LINK_FOTO": "https://picsum.photos/seed/1080/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 90
+            },
+            {
+                "TITULO": "Formulario Preventivo 1081",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1081.",
+                "LINK_FOTO": "https://picsum.photos/seed/1081/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 91
+            },
+            {
+                "TITULO": "Plan Estratégico 1082",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1082.",
+                "LINK_FOTO": "https://picsum.photos/seed/1082/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 92
+            },
+            {
+                "TITULO": "Manual Ambiental 1083",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1083.",
+                "LINK_FOTO": "https://picsum.photos/seed/1083/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 93
+            },
+            {
+                "TITULO": "Plan Operativo 1084",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1084.",
+                "LINK_FOTO": "https://picsum.photos/seed/1084/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 94
+            },
+            {
+                "TITULO": "Plan Especializado 1085",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1085.",
+                "LINK_FOTO": "https://picsum.photos/seed/1085/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 95
+            },
+            {
+                "TITULO": "Instructivo Operativo 1086",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1086.",
+                "LINK_FOTO": "https://picsum.photos/seed/1086/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 96
+            },
+            {
+                "TITULO": "Protocolo Básico 1087",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1087.",
+                "LINK_FOTO": "https://picsum.photos/seed/1087/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 97
+            },
+            {
+                "TITULO": "Protocolo Ambiental 1088",
+                "CATEGORIA": "Capacitación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1088.",
+                "LINK_FOTO": "https://picsum.photos/seed/1088/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 98
+            },
+            {
+                "TITULO": "Instructivo Especializado 1089",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1089.",
+                "LINK_FOTO": "https://picsum.photos/seed/1089/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 99
+            },
+            {
+                "TITULO": "Estándar Ambiental 1090",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1090.",
+                "LINK_FOTO": "https://picsum.photos/seed/1090/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 100
+            },
+            {
+                "TITULO": "Manual Seguro 1091",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1091.",
+                "LINK_FOTO": "https://picsum.photos/seed/1091/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 101
+            },
+            {
+                "TITULO": "Plan Operativo 1092",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1092.",
+                "LINK_FOTO": "https://picsum.photos/seed/1092/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 102
+            },
+            {
+                "TITULO": "Procedimiento Especializado 1093",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1093.",
+                "LINK_FOTO": "https://picsum.photos/seed/1093/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 103
+            },
+            {
+                "TITULO": "Plan Correctivo 1094",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1094.",
+                "LINK_FOTO": "https://picsum.photos/seed/1094/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 104
+            },
+            {
+                "TITULO": "Estándar Estratégico 1095",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1095.",
+                "LINK_FOTO": "https://picsum.photos/seed/1095/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 105
+            },
+            {
+                "TITULO": "Formulario Operativo 1096",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1096.",
+                "LINK_FOTO": "https://picsum.photos/seed/1096/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 106
+            },
+            {
+                "TITULO": "Guía Avanzado 1097",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1097.",
+                "LINK_FOTO": "https://picsum.photos/seed/1097/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 107
+            },
+            {
+                "TITULO": "Plan Seguro 1098",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1098.",
+                "LINK_FOTO": "https://picsum.photos/seed/1098/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 108
+            },
+            {
+                "TITULO": "Instructivo Operativo 1099",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1099.",
+                "LINK_FOTO": "https://picsum.photos/seed/1099/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 109
+            },
+            {
+                "TITULO": "Protocolo Correctivo 1100",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1100.",
+                "LINK_FOTO": "https://picsum.photos/seed/1100/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 110
+            },
+            {
+                "TITULO": "Manual Seguro 1101",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1101.",
+                "LINK_FOTO": "https://picsum.photos/seed/1101/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 111
+            },
+            {
+                "TITULO": "Manual Seguro 1102",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1102.",
+                "LINK_FOTO": "https://picsum.photos/seed/1102/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 112
+            },
+            {
+                "TITULO": "Manual Correctivo 1103",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1103.",
+                "LINK_FOTO": "https://picsum.photos/seed/1103/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 113
+            },
+            {
+                "TITULO": "Protocolo Operativo 1104",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1104.",
+                "LINK_FOTO": "https://picsum.photos/seed/1104/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 114
+            },
+            {
+                "TITULO": "Protocolo Estratégico 1105",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1105.",
+                "LINK_FOTO": "https://picsum.photos/seed/1105/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 115
+            },
+            {
+                "TITULO": "Plan Seguro 1106",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1106.",
+                "LINK_FOTO": "https://picsum.photos/seed/1106/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 116
+            },
+            {
+                "TITULO": "Procedimiento Estratégico 1107",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1107.",
+                "LINK_FOTO": "https://picsum.photos/seed/1107/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 117
+            },
+            {
+                "TITULO": "Procedimiento Básico 1108",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1108.",
+                "LINK_FOTO": "https://picsum.photos/seed/1108/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 118
+            },
+            {
+                "TITULO": "Instructivo Correctivo 1109",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1109.",
+                "LINK_FOTO": "https://picsum.photos/seed/1109/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 119
+            },
+            {
+                "TITULO": "Plan Operativo 1110",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1110.",
+                "LINK_FOTO": "https://picsum.photos/seed/1110/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 120
+            },
+            {
+                "TITULO": "Guía Técnico 1111",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1111.",
+                "LINK_FOTO": "https://picsum.photos/seed/1111/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 121
+            },
+            {
+                "TITULO": "Manual Correctivo 1112",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1112.",
+                "LINK_FOTO": "https://picsum.photos/seed/1112/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 122
+            },
+            {
+                "TITULO": "Checklist Técnico 1113",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1113.",
+                "LINK_FOTO": "https://picsum.photos/seed/1113/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 123
+            },
+            {
+                "TITULO": "Instructivo Avanzado 1114",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1114.",
+                "LINK_FOTO": "https://picsum.photos/seed/1114/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 124
+            },
+            {
+                "TITULO": "Guía Estratégico 1115",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1115.",
+                "LINK_FOTO": "https://picsum.photos/seed/1115/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 125
+            },
+            {
+                "TITULO": "Protocolo Operativo 1116",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1116.",
+                "LINK_FOTO": "https://picsum.photos/seed/1116/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 126
+            },
+            {
+                "TITULO": "Manual Básico 1117",
+                "CATEGORIA": "Capacitación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1117.",
+                "LINK_FOTO": "https://picsum.photos/seed/1117/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 127
+            },
+            {
+                "TITULO": "Protocolo Seguro 1118",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1118.",
+                "LINK_FOTO": "https://picsum.photos/seed/1118/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 128
+            },
+            {
+                "TITULO": "Plan Preventivo 1119",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1119.",
+                "LINK_FOTO": "https://picsum.photos/seed/1119/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 129
+            },
+            {
+                "TITULO": "Manual Estratégico 1120",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1120.",
+                "LINK_FOTO": "https://picsum.photos/seed/1120/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 130
+            },
+            {
+                "TITULO": "Estándar Ambiental 1121",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1121.",
+                "LINK_FOTO": "https://picsum.photos/seed/1121/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 131
+            },
+            {
+                "TITULO": "Procedimiento Técnico 1122",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1122.",
+                "LINK_FOTO": "https://picsum.photos/seed/1122/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 132
+            },
+            {
+                "TITULO": "Formulario Estratégico 1123",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1123.",
+                "LINK_FOTO": "https://picsum.photos/seed/1123/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 133
+            },
+            {
+                "TITULO": "Plan Técnico 1124",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1124.",
+                "LINK_FOTO": "https://picsum.photos/seed/1124/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 134
+            },
+            {
+                "TITULO": "Plan Estratégico 1125",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1125.",
+                "LINK_FOTO": "https://picsum.photos/seed/1125/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 135
+            },
+            {
+                "TITULO": "Procedimiento Básico 1126",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1126.",
+                "LINK_FOTO": "https://picsum.photos/seed/1126/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 136
+            },
+            {
+                "TITULO": "Procedimiento Especializado 1127",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1127.",
+                "LINK_FOTO": "https://picsum.photos/seed/1127/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 137
+            },
+            {
+                "TITULO": "Protocolo Ambiental 1128",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1128.",
+                "LINK_FOTO": "https://picsum.photos/seed/1128/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 138
+            },
+            {
+                "TITULO": "Reglamento Básico 1129",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1129.",
+                "LINK_FOTO": "https://picsum.photos/seed/1129/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 139
+            },
+            {
+                "TITULO": "Plan Básico 1130",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1130.",
+                "LINK_FOTO": "https://picsum.photos/seed/1130/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 140
+            },
+            {
+                "TITULO": "Instructivo Correctivo 1131",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1131.",
+                "LINK_FOTO": "https://picsum.photos/seed/1131/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 141
+            },
+            {
+                "TITULO": "Guía Ambiental 1132",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1132.",
+                "LINK_FOTO": "https://picsum.photos/seed/1132/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 142
+            },
+            {
+                "TITULO": "Guía Operativo 1133",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1133.",
+                "LINK_FOTO": "https://picsum.photos/seed/1133/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 143
+            },
+            {
+                "TITULO": "Checklist Técnico 1134",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1134.",
+                "LINK_FOTO": "https://picsum.photos/seed/1134/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 144
+            },
+            {
+                "TITULO": "Manual Correctivo 1135",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1135.",
+                "LINK_FOTO": "https://picsum.photos/seed/1135/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 145
+            },
+            {
+                "TITULO": "Plan Operativo 1136",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1136.",
+                "LINK_FOTO": "https://picsum.photos/seed/1136/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 146
+            },
+            {
+                "TITULO": "Procedimiento Estratégico 1137",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1137.",
+                "LINK_FOTO": "https://picsum.photos/seed/1137/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 147
+            },
+            {
+                "TITULO": "Estándar Preventivo 1138",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1138.",
+                "LINK_FOTO": "https://picsum.photos/seed/1138/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 148
+            },
+            {
+                "TITULO": "Procedimiento Operativo 1139",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1139.",
+                "LINK_FOTO": "https://picsum.photos/seed/1139/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 149
+            },
+            {
+                "TITULO": "Guía Preventivo 1140",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1140.",
+                "LINK_FOTO": "https://picsum.photos/seed/1140/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 150
+            },
+            {
+                "TITULO": "Instructivo Operativo 1141",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1141.",
+                "LINK_FOTO": "https://picsum.photos/seed/1141/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 151
+            },
+            {
+                "TITULO": "Checklist Especializado 1142",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1142.",
+                "LINK_FOTO": "https://picsum.photos/seed/1142/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 152
+            },
+            {
+                "TITULO": "Formulario Estratégico 1143",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1143.",
+                "LINK_FOTO": "https://picsum.photos/seed/1143/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 153
+            },
+            {
+                "TITULO": "Checklist Preventivo 1144",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1144.",
+                "LINK_FOTO": "https://picsum.photos/seed/1144/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 154
+            },
+            {
+                "TITULO": "Checklist Operativo 1145",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1145.",
+                "LINK_FOTO": "https://picsum.photos/seed/1145/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 155
+            },
+            {
+                "TITULO": "Checklist Ambiental 1146",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1146.",
+                "LINK_FOTO": "https://picsum.photos/seed/1146/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 156
+            },
+            {
+                "TITULO": "Procedimiento Correctivo 1147",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1147.",
+                "LINK_FOTO": "https://picsum.photos/seed/1147/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 157
+            },
+            {
+                "TITULO": "Estándar Técnico 1148",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1148.",
+                "LINK_FOTO": "https://picsum.photos/seed/1148/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 158
+            },
+            {
+                "TITULO": "Reglamento Básico 1149",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1149.",
+                "LINK_FOTO": "https://picsum.photos/seed/1149/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 159
+            },
+            {
+                "TITULO": "Procedimiento Básico 1150",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1150.",
+                "LINK_FOTO": "https://picsum.photos/seed/1150/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 160
+            },
+            {
+                "TITULO": "Checklist Estratégico 1151",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1151.",
+                "LINK_FOTO": "https://picsum.photos/seed/1151/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 161
+            },
+            {
+                "TITULO": "Estándar Especializado 1152",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1152.",
+                "LINK_FOTO": "https://picsum.photos/seed/1152/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 162
+            },
+            {
+                "TITULO": "Procedimiento Técnico 1153",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1153.",
+                "LINK_FOTO": "https://picsum.photos/seed/1153/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 163
+            },
+            {
+                "TITULO": "Instructivo Especializado 1154",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1154.",
+                "LINK_FOTO": "https://picsum.photos/seed/1154/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 164
+            },
+            {
+                "TITULO": "Reglamento Operativo 1155",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1155.",
+                "LINK_FOTO": "https://picsum.photos/seed/1155/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 165
+            },
+            {
+                "TITULO": "Protocolo Ambiental 1156",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1156.",
+                "LINK_FOTO": "https://picsum.photos/seed/1156/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 166
+            },
+            {
+                "TITULO": "Plan Operativo 1157",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1157.",
+                "LINK_FOTO": "https://picsum.photos/seed/1157/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 167
+            },
+            {
+                "TITULO": "Reglamento Especializado 1158",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1158.",
+                "LINK_FOTO": "https://picsum.photos/seed/1158/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 168
+            },
+            {
+                "TITULO": "Instructivo Estratégico 1159",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1159.",
+                "LINK_FOTO": "https://picsum.photos/seed/1159/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 169
+            },
+            {
+                "TITULO": "Instructivo Seguro 1160",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1160.",
+                "LINK_FOTO": "https://picsum.photos/seed/1160/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 170
+            },
+            {
+                "TITULO": "Instructivo Técnico 1161",
+                "CATEGORIA": "Capacitación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1161.",
+                "LINK_FOTO": "https://picsum.photos/seed/1161/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 171
+            },
+            {
+                "TITULO": "Protocolo Técnico 1162",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1162.",
+                "LINK_FOTO": "https://picsum.photos/seed/1162/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 172
+            },
+            {
+                "TITULO": "Plan Técnico 1163",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1163.",
+                "LINK_FOTO": "https://picsum.photos/seed/1163/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 173
+            },
+            {
+                "TITULO": "Instructivo Estratégico 1164",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1164.",
+                "LINK_FOTO": "https://picsum.photos/seed/1164/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 174
+            },
+            {
+                "TITULO": "Plan Correctivo 1165",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1165.",
+                "LINK_FOTO": "https://picsum.photos/seed/1165/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 175
+            },
+            {
+                "TITULO": "Checklist Correctivo 1166",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1166.",
+                "LINK_FOTO": "https://picsum.photos/seed/1166/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 176
+            },
+            {
+                "TITULO": "Guía Estratégico 1167",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1167.",
+                "LINK_FOTO": "https://picsum.photos/seed/1167/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 177
+            },
+            {
+                "TITULO": "Protocolo Especializado 1168",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1168.",
+                "LINK_FOTO": "https://picsum.photos/seed/1168/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 178
+            },
+            {
+                "TITULO": "Checklist Ambiental 1169",
+                "CATEGORIA": "Formatos",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1169.",
+                "LINK_FOTO": "https://picsum.photos/seed/1169/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 179
+            },
+            {
+                "TITULO": "Plan Básico 1170",
+                "CATEGORIA": "Capacitación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1170.",
+                "LINK_FOTO": "https://picsum.photos/seed/1170/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 180
+            },
+            {
+                "TITULO": "Procedimiento Básico 1171",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el procedimiento de prueba número 1171.",
+                "LINK_FOTO": "https://picsum.photos/seed/1171/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 181
+            },
+            {
+                "TITULO": "Manual Técnico 1172",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1172.",
+                "LINK_FOTO": "https://picsum.photos/seed/1172/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 182
+            },
+            {
+                "TITULO": "Reglamento Avanzado 1173",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1173.",
+                "LINK_FOTO": "https://picsum.photos/seed/1173/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 183
+            },
+            {
+                "TITULO": "Formulario Especializado 1174",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1174.",
+                "LINK_FOTO": "https://picsum.photos/seed/1174/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 184
+            },
+            {
+                "TITULO": "Guía Técnico 1175",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1175.",
+                "LINK_FOTO": "https://picsum.photos/seed/1175/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 185
+            },
+            {
+                "TITULO": "Plan Preventivo 1176",
+                "CATEGORIA": "IPERC",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1176.",
+                "LINK_FOTO": "https://picsum.photos/seed/1176/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 186
+            },
+            {
+                "TITULO": "Checklist Seguro 1177",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1177.",
+                "LINK_FOTO": "https://picsum.photos/seed/1177/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 187
+            },
+            {
+                "TITULO": "Plan Preventivo 1178",
+                "CATEGORIA": "Capacitación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1178.",
+                "LINK_FOTO": "https://picsum.photos/seed/1178/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 188
+            },
+            {
+                "TITULO": "Guía Ambiental 1179",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1179.",
+                "LINK_FOTO": "https://picsum.photos/seed/1179/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 189
+            },
+            {
+                "TITULO": "Formulario Preventivo 1180",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1180.",
+                "LINK_FOTO": "https://picsum.photos/seed/1180/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 190
+            },
+            {
+                "TITULO": "Manual Ambiental 1181",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1181.",
+                "LINK_FOTO": "https://picsum.photos/seed/1181/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 191
+            },
+            {
+                "TITULO": "Reglamento Operativo 1182",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1182.",
+                "LINK_FOTO": "https://picsum.photos/seed/1182/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 192
+            },
+            {
+                "TITULO": "Checklist Especializado 1183",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1183.",
+                "LINK_FOTO": "https://picsum.photos/seed/1183/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 193
+            },
+            {
+                "TITULO": "Plan Seguro 1184",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1184.",
+                "LINK_FOTO": "https://picsum.photos/seed/1184/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 194
+            },
+            {
+                "TITULO": "Checklist Operativo 1185",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1185.",
+                "LINK_FOTO": "https://picsum.photos/seed/1185/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 195
+            },
+            {
+                "TITULO": "Checklist Ambiental 1186",
+                "CATEGORIA": "Legislación",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1186.",
+                "LINK_FOTO": "https://picsum.photos/seed/1186/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 196
+            },
+            {
+                "TITULO": "Instructivo Técnico 1187",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1187.",
+                "LINK_FOTO": "https://picsum.photos/seed/1187/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 197
+            },
+            {
+                "TITULO": "Protocolo Técnico 1188",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el protocolo de prueba número 1188.",
+                "LINK_FOTO": "https://picsum.photos/seed/1188/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 198
+            },
+            {
+                "TITULO": "Estándar Operativo 1189",
+                "CATEGORIA": "Examen",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el estándar de prueba número 1189.",
+                "LINK_FOTO": "https://picsum.photos/seed/1189/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 199
+            },
+            {
+                "TITULO": "Checklist Estratégico 1190",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1190.",
+                "LINK_FOTO": "https://picsum.photos/seed/1190/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 200
+            },
+            {
+                "TITULO": "Instructivo Seguro 1191",
+                "CATEGORIA": "Estándares",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1191.",
+                "LINK_FOTO": "https://picsum.photos/seed/1191/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 201
+            },
+            {
+                "TITULO": "Formulario Especializado 1192",
+                "CATEGORIA": "Manuales",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el formulario de prueba número 1192.",
+                "LINK_FOTO": "https://picsum.photos/seed/1192/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 202
+            },
+            {
+                "TITULO": "Checklist Avanzado 1193",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el checklist de prueba número 1193.",
+                "LINK_FOTO": "https://picsum.photos/seed/1193/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 203
+            },
+            {
+                "TITULO": "Reglamento Ambiental 1194",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1194.",
+                "LINK_FOTO": "https://picsum.photos/seed/1194/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 204
+            },
+            {
+                "TITULO": "Plan Correctivo 1195",
+                "CATEGORIA": "SGA",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el plan de prueba número 1195.",
+                "LINK_FOTO": "https://picsum.photos/seed/1195/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 205
+            },
+            {
+                "TITULO": "Manual Operativo 1196",
+                "CATEGORIA": "Inspecciones",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1196.",
+                "LINK_FOTO": "https://picsum.photos/seed/1196/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 206
+            },
+            {
+                "TITULO": "Reglamento Estratégico 1197",
+                "CATEGORIA": "Auditorías",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el reglamento de prueba número 1197.",
+                "LINK_FOTO": "https://picsum.photos/seed/1197/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 207
+            },
+            {
+                "TITULO": "Manual Avanzado 1198",
+                "CATEGORIA": "Reportes",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el manual de prueba número 1198.",
+                "LINK_FOTO": "https://picsum.photos/seed/1198/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 208
+            },
+            {
+                "TITULO": "Guía Ambiental 1199",
+                "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1199.",
+                "LINK_FOTO": "https://picsum.photos/seed/1199/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
+                "ORDEN": 209
+            }
+        ];
 
         const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?auto=format&fit=crop&q=80&w=800";
         const CATEGORY_TITLE_TEXT_SIZE = "text-lg"; // e.g. text-lg, text-xl, text-2xl
@@ -2425,11 +2467,11 @@
             document.getElementById('dashboardView').classList.add('hidden');
             const view = document.getElementById('detailView'); view.classList.remove('hidden'); view.classList.add('fade-in');
             document.getElementById('currentCategoryTitle').textContent = cat;
-            
+
             currentCategoryItems = groupedData[cat] || [];
             displayedItemsCount = 0;
             const grid = document.getElementById('cardsGrid'); grid.innerHTML = '';
-            
+
             let loadMoreContainer = document.getElementById('loadMoreContainer');
             if (!loadMoreContainer) {
                 loadMoreContainer = document.createElement('div');
@@ -2445,20 +2487,20 @@
         }
 
         function loadMoreItems() {
-             const grid = document.getElementById('cardsGrid');
-             const loadMoreContainer = document.getElementById('loadMoreContainer');
-             
-             const nextItems = currentCategoryItems.slice(displayedItemsCount, displayedItemsCount + ITEMS_PER_PAGE);
-             
-             nextItems.forEach((item, index) => {
-              const card = createCard(item);
-              card.classList.add('card-anim');
-              card.style.animationDelay = `${index * 0.05}s`;
-              grid.appendChild(card);
+            const grid = document.getElementById('cardsGrid');
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+
+            const nextItems = currentCategoryItems.slice(displayedItemsCount, displayedItemsCount + ITEMS_PER_PAGE);
+
+            nextItems.forEach((item, index) => {
+                const card = createCard(item);
+                card.classList.add('card-anim');
+                card.style.animationDelay = `${index * 0.05}s`;
+                grid.appendChild(card);
             });
-            
+
             displayedItemsCount += nextItems.length;
-            
+
             if (displayedItemsCount >= currentCategoryItems.length) {
                 loadMoreContainer.innerHTML = '';
             } else {
@@ -2644,25 +2686,170 @@
             document.getElementById('modalDate').textContent = item.FECHA || "N/A";
             const linkBtn = document.getElementById('modalLink');
             if (item.LINK_INFORMACION && item.LINK_INFORMACION !== "#") { linkBtn.classList.remove('hidden'); linkBtn.classList.add('inline-flex'); linkBtn.href = item.LINK_INFORMACION; } else { linkBtn.classList.add('hidden'); linkBtn.classList.remove('inline-flex'); }
-            const img = document.getElementById('modalImage'); img.src = item.LINK_FOTO || FALLBACK_IMAGE; img.classList.remove('hidden');
+            const imgContainer = document.getElementById('modalImageContainer');
+            const img = document.getElementById('modalImage'); img.src = item.LINK_FOTO || FALLBACK_IMAGE;
+            if (imgContainer) { imgContainer.classList.remove('hidden'); } else { img.classList.remove('hidden'); }
             modal.classList.remove('hidden'); setTimeout(() => cont.classList.remove('scale-95'), 10);
         }
         function closeModal() { const modal = document.getElementById('modal'); const cont = document.getElementById('modalContainer'); cont.classList.add('scale-95'); setTimeout(() => modal.classList.add('hidden'), 200); }
         function openSearch() { document.getElementById('searchOverlay').classList.remove('hidden'); setTimeout(() => document.getElementById('searchInput').focus(), 100); }
         function closeSearch() { document.getElementById('searchOverlay').classList.add('hidden'); }
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSearch(); });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSearch();
+                closeEmergencyModal(); // Cerrar tecla rapida
+            }
+        });
+
+        // --- Funciones de Zoom de Imagen ---
+        let currentZoom = 1;
+        let zoomMin = 1;
+        let zoomMax = 4;
+        let isDragging = false;
+        let startX = 0; let startY = 0;
+        let translateX = 0; let translateY = 0;
+        let lastTranslateX = 0; let lastTranslateY = 0;
+        let initialPinchDistance = null;
+        let initialZoom = 1;
+
+        function openZoomModal() {
+            const zoomModal = document.getElementById('zoomModal');
+            const zoomImage = document.getElementById('zoomModalImage');
+            const sourceImage = document.getElementById('modalImage');
+            zoomImage.src = sourceImage.src;
+            zoomModal.classList.remove('hidden');
+
+            currentZoom = 1; translateX = 0; translateY = 0; lastTranslateX = 0; lastTranslateY = 0;
+            updateZoomTransform();
+
+            zoomModal.addEventListener('wheel', handleWheelZoom, { passive: false });
+            zoomModal.addEventListener('touchstart', handleTouchStart, { passive: false });
+            zoomModal.addEventListener('touchmove', handleTouchMove, { passive: false });
+            zoomModal.addEventListener('touchend', handleTouchEnd);
+            zoomImage.addEventListener('mousedown', handleMouseDown);
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+
+            setTimeout(() => {
+                zoomModal.classList.remove('opacity-0');
+                zoomImage.classList.remove('scale-95');
+                zoomImage.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeZoomModal() {
+            const zoomModal = document.getElementById('zoomModal');
+            const zoomImage = document.getElementById('zoomModalImage');
+            zoomModal.classList.add('opacity-0');
+            zoomImage.classList.remove('scale-100');
+            zoomImage.classList.add('scale-95');
+
+            zoomModal.removeEventListener('wheel', handleWheelZoom);
+            zoomModal.removeEventListener('touchstart', handleTouchStart);
+            zoomModal.removeEventListener('touchmove', handleTouchMove);
+            zoomModal.removeEventListener('touchend', handleTouchEnd);
+            zoomImage.removeEventListener('mousedown', handleMouseDown);
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+
+            setTimeout(() => zoomModal.classList.add('hidden'), 300);
+        }
+
+        function updateZoomTransform() {
+            const zoomImage = document.getElementById('zoomModalImage');
+            if (zoomImage) {
+                if (currentZoom === 1) { translateX = 0; translateY = 0; }
+                zoomImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
+                if (currentZoom > 1) { zoomImage.style.cursor = isDragging ? 'grabbing' : 'grab'; }
+                else { zoomImage.style.cursor = 'zoom-in'; }
+            }
+        }
+
+        function handleWheelZoom(e) {
+            e.preventDefault();
+            const zoomStep = 0.2;
+            currentZoom = e.deltaY < 0 ? Math.min(currentZoom + zoomStep, zoomMax) : Math.max(currentZoom - zoomStep, zoomMin);
+            updateZoomTransform();
+        }
+
+        function getPinchDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function handleTouchStart(e) {
+            if (e.touches.length === 2) {
+                initialPinchDistance = getPinchDistance(e.touches); initialZoom = currentZoom; isDragging = false;
+            } else if (e.touches.length === 1 && currentZoom > 1) {
+                isDragging = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+                lastTranslateX = translateX; lastTranslateY = translateY;
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (e.touches.length === 2 && initialPinchDistance !== null) {
+                e.preventDefault();
+                const currentDistance = getPinchDistance(e.touches);
+                const pinchRatio = Math.pow(currentDistance / initialPinchDistance, 1.5);
+                currentZoom = Math.max(zoomMin, Math.min(initialZoom * pinchRatio, zoomMax));
+                updateZoomTransform();
+            } else if (e.touches.length === 1 && isDragging) {
+                e.preventDefault();
+                translateX = lastTranslateX + (e.touches[0].clientX - startX);
+                translateY = lastTranslateY + (e.touches[0].clientY - startY);
+                updateZoomTransform();
+            }
+        }
+
+        function handleTouchEnd(e) {
+            initialPinchDistance = null;
+            if (e.touches.length === 0) { isDragging = false; lastTranslateX = translateX; lastTranslateY = translateY; updateZoomTransform(); }
+        }
+
+        function handleMouseDown(e) {
+            if (currentZoom > 1) { e.preventDefault(); isDragging = true; startX = e.clientX; startY = e.clientY; lastTranslateX = translateX; lastTranslateY = translateY; updateZoomTransform(); }
+        }
+
+        function handleMouseMove(e) {
+            if (isDragging && currentZoom > 1) {
+                e.preventDefault();
+                translateX = lastTranslateX + (e.clientX - startX);
+                translateY = lastTranslateY + (e.clientY - startY);
+                updateZoomTransform();
+            }
+        }
+
+        function handleMouseUp() {
+            if (isDragging) { isDragging = false; lastTranslateX = translateX; lastTranslateY = translateY; updateZoomTransform(); }
+        }
+
+        // --- Funciones de Modal de Emergencia ---
+        const EMERGENCY_IMAGE_URL = 'https://lh3.googleusercontent.com/d/1S4WjOgDQKLdOxyrZPr4WFbq-MPv-OVXT';
+
+        function openEmergencyModal() {
+            const modal = document.getElementById('emergencyModal');
+            const img = document.getElementById('emergencyImage');
+            img.src = EMERGENCY_IMAGE_URL;
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function closeEmergencyModal() {
+            const modal = document.getElementById('emergencyModal');
+            if (modal) {
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        }
     </script>
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-

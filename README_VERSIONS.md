@@ -11,11 +11,11 @@ Este documento contiene un resumen de las versiones del proyecto registradas en 
 
 ## Versiones (Commits)
 
-### 🔹 Versión 2.0 (Local / Pending Push)
-* **Commit:** *(Generando)*
+### 🔹 Versión 2.0 (Pushed)
+* **Commit:** `e50cfe6`
 * **Fecha:** 2026-02-23
 * **Autor:** soporteghelo
-* **Estado:** **Commit Local** - Pendiente de subir a GitHub (Push).
+* **Estado:** **Subido a GitHub (Pushed)** - Esta es la versión que actualmente se encuentra en el repositorio remoto (`origin/main`).
 * **Descripción:** 
   > v2.0: Gran actualización de rendimiento y UX.
   > - **Backend:** Añadido `CacheService` en `Code.gs` (5 mins de TTL) para evitar quota limits.
