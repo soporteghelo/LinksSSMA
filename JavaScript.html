@@ -310,8 +310,7 @@
       btn.onclick = () => showCategoryDetail(cat);
 
       btn.innerHTML = `
-      btn.innerHTML = `
-        < div class="h-full flex flex-col justify-between min-w-0 pr-6" >
+        <div class="h-full flex flex-col justify-between min-w-0 pr-6">
           <h3 class="font-bold text-lg md:text-xl font-display text-aesa-dark group-hover:text-aesa-blue transition-colors uppercase tracking-tight whitespace-nowrap overflow-hidden category-title min-w-0 pr-0">
             ${cat}
           </h3>
@@ -321,7 +320,7 @@
             </div>
             <p class="text-slate-600 text-sm leading-tight font-medium">${count} Items</p>
           </div>
-        </div >
+        </div>
         <span class="material-icons absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 group-hover:text-aesa-blue group-hover:translate-x-0.5 transition-all text-lg">chevron_right</span>
       `;
       applyLanternEffect(btn);
@@ -380,7 +379,7 @@
     nextItems.forEach((item, index) => {
       const card = createCard(item);
       card.classList.add('card-anim');
-      card.style.animationDelay = `${ index * 0.05 } s`;
+      card.style.animationDelay = `${index * 0.05} s`;
       grid.appendChild(card);
     });
 
@@ -419,7 +418,7 @@
     let descHtml = item.DESCRIPCION_CORTA;
 
     if (highlightTerm) {
-      const regex = new RegExp(`(${ highlightTerm })`, 'gi');
+      const regex = new RegExp(`(${highlightTerm})`, 'gi');
       titleHtml = titleHtml.replace(regex, '<mark>$1</mark>');
       descHtml = descHtml.replace(regex, '<mark>$1</mark>');
     }
@@ -488,7 +487,7 @@
         };
 
         card.classList.add('card-anim');
-        card.style.animationDelay = `${ foundCount * 0.05}s`;
+        card.style.animationDelay = `${foundCount * 0.05}s`;
         resultsContainer.appendChild(card);
         foundCount++;
       }
@@ -659,7 +658,7 @@
 
       // Keep original order of text + HTML as found in body content.
       const bodyContent = doc.body ? doc.body.innerHTML : value;
-      descEl.innerHTML = `< style > ${ scopedStyles }</style > <div class="modal-html-content">${bodyContent}</div>`;
+      descEl.innerHTML = `< style > ${scopedStyles}</style > <div class="modal-html-content">${bodyContent}</div>`;
       return;
     }
 
@@ -843,7 +842,7 @@
         translateY = 0;
       }
 
-      zoomImage.style.transform = `translate(${ translateX }px, ${ translateY }px) scale(${ currentZoom })`;
+      zoomImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
 
       // Update cursor based on zoom state
       if (currentZoom > 1) {
