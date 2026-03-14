@@ -11,6 +11,74 @@ Este documento contiene un resumen de las versiones del proyecto registradas en 
 
 ## Versiones (Commits)
 
+### 🔹 Versión 4.6 (Local)
+* **Commit:** `(pendiente)`
+* **Fecha:** 2026-03-14
+* **Autor:** soporteghelo
+* **Estado:** **Local (Pendiente de Push)**
+* **Descripción:**
+  > v4.6: Mejoras UX — PAC sincronizado, navegación en comunicados, toasts y layout modal.
+  > - **PAC (JavaScript.html):** Se sincronizó completamente el renderizado de la tabla PAC con Preview.html: columnas con anchos fijos (46/18/18/18%), botones `inline-flex`, CSS responsivo con `@media`, "Sin enlace" en gris cursiva.
+  > - **PAC Video Inline:** Al hacer clic en "Ver" de la columna Video, el MP4 se reproduce directamente dentro del modal. Si el link no es un video, abre en nueva pestaña.
+  > - **Comunicados:** Al abrir un comunicado desde el carrusel, las flechas de navegación ← → ahora funcionan para moverse entre comunicados sin cerrar el modal.
+  > - **Modal Layout:** El botón "CLICK AQUI" se reubicó a la posición superior izquierda (donde estaba la fecha); la fecha se desplazó a la derecha en la misma fila. Aplicado en `Index.html` y `Preview.html`.
+  > - **Toast Notifications:** Se reemplazaron todos los `alert()` del flujo de Feedback por toasts visuales con animación slide-up, colores por tipo (verde/amarillo/rojo/azul) e íconos Material. Auto-dismiss a los 3.5s.
+
+### 🔹 Versión 4.5 (Local)
+* **Commit:** `(pendiente)`
+* **Fecha:** 2026-03-14
+* **Autor:** soporteghelo
+* **Estado:** **Local (Pendiente de Push)**
+* **Descripción:**
+  > v4.5: Corrección crítica de tarjetas y estilos en JavaScript.html.
+  > - **Bug Fix (Cards):** Se corrigieron etiquetas HTML malformadas (`< div class= >`, `</div >`) en la función `createCard` de `JavaScript.html` que causaban que las tarjetas renderizaran HTML como texto plano en producción.
+  > - **Bug Fix (Búsqueda):** Se corrigieron las mismas etiquetas rotas en los estados de "búsqueda vacía" y "sin resultados".
+  > - **Bug Fix (Descripción PAC):** Se reparó el bloque de estilos CSS incrustado para la vista PAC: etiqueta `<style>` rota y propiedades CSS con espacios inválidos (`border - radius`, `font- family`).
+  > - **Bug Fix (Modal HTML):** Se corrigió el renderizado de descripciones HTML genéricas (`< style >`, `</style >`).
+
+### 🔹 Versión 4.4 (Local)
+* **Commit:** `(pendiente)`
+* **Fecha:** 2026-03-14
+* **Autor:** soporteghelo
+* **Estado:** **Local (Pendiente de Push)**
+* **Descripción:**
+  > v4.4: Implementación de Botón Flotante y Buzón de Mejoras (Feedback).
+  > - **Backend (GAS):** Adición de la función `saveFeedback` en `Code.gs` para registrar comentarios automáticamente en una nueva pestaña "FEEDBACK" del Google Sheet. Se centralizó el ID del Spreadsheet en una variable global (`SPREADSHEET_ID`) para facilitar la portabilidad del código.
+  > - **Frontend (UI):** Incorporación de un botón flotante circular en la esquina inferior derecha con colores institucionales y un modal animado ("Buzón de Mejoras") para recolectar ideas de los usuarios.
+  > - **UX:** Validación de longitud mínima de caracteres, estados de carga ("Enviando...") con animaciones de spinner y alertas de confirmación.
+  > - **Compatibilidad:** Implementado en `Index.html` (producción) y `Preview.html` (con simulación local para pruebas de interfaz).
+
+### 🔹 Versión 4.3 (Local)
+* **Commit:** `(pendiente)`
+* **Fecha:** 2026-03-14
+* **Autor:** soporteghelo
+* **Estado:** **Local (Pendiente de Push)**
+* **Descripción:**
+  > v4.3: Incorporación de Navegación Interactiva dentro del Modal.
+  > - **Frontend (JS & UI):** Se agregaron botones flotantes ("Anterior" y "Siguiente") dentro del modal de `Index.html` y `Preview.html` respetando los colores de la marca institucional (`#2b3a62`).
+  > - **Lógica (JS):** Las funciones `openModal` y la nueva `navigateModal` exponen el estado global del índice del slide activo (`currentModalIndex`) y de los items actualmente listados (`currentCategoryItems`), permitiendo avanzar y retroceder fluidamente entre documentos de la misma categoría.
+  > - **UX:** La navegación no requiere cerrar el modal. El DOM se inactiva y reinicia según necesidad visual (Pausa de videos embebidos/iframes entre saltos). Las flechas de los bordes se desactivan al inicio o final de las listas.
+
+### 🔹 Versión 4.2 (Local)
+* **Commit:** `(pendiente)`
+* **Fecha:** 2026-03-10
+* **Autor:** soporteghelo
+* **Estado:** **Local (Pendiente de Push)**
+* **Descripción:**
+  > v4.2: Implementación de Visor de Documentos Incrustado en el Modal.
+  > - **Frontend (JS & UI):** Se agregaron contenedores (`iframe` y `video`) en el modal de detalles para `Index.html` y `Preview.html`.
+  > - **Lógica (JS):** Se actualizó la función `openModal` para detectar enlaces de PDF, YouTube y MP4, mostrándolos directamente en el modal en lugar de abrir una pestaña nueva. Otros enlaces mantienen el botón externo.
+  > - **UX:** Se oculta la imagen de portada cuando hay un medio incrustado para maximizar el espacio, al cerrar el modal se detiene la reproducción del iframe y video.
+  > - **Pruebas:** Se añadió data simulada en `Preview.html` con un PDF local, video MP4 y YouTube funcional.
+
+### 🔹 Versión 4.1 (Pushed)
+* **Commit:** `a83204a`
+* **Fecha:** 2026-02-24
+* **Autor:** soporteghelo
+* **Estado:** **Subido a GitHub (Pushed)**
+* **Descripción:**
+  > v4.1: Corrección de bug en el botón de emergencia. Se eliminó el ID duplicado en el modal para mostrar la imagen correctamente.
+
 ### 🔹 Versión 4.0 (Pushed)
 * **Commit:** `(pendiente)`
 * **Fecha:** 2026-02-24
@@ -59,4 +127,4 @@ Este documento contiene un resumen de las versiones del proyecto registradas en 
 * **Descripción:** 
   > Mejora modal, header HTML/PAC y ajustes de UI. Version Estable.
 
-*(Nota: Este archivo se irá actualizando conforme se agreguen nuevos commits y se envíen al repositorio remoto).*
+*(Nota: Este archivo se irá actualizando conforme se agreguen nuevos commits y se envíen al repositorio remoto).

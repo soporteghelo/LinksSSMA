@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -402,94 +402,31 @@
             </div>
             <div class="flex flex-col max-h-[85vh]">
                 <div class="overflow-y-auto">
-            <!-- Contenedor de Imagen con Botón Zoom y Navegación -->
-          <div class="relative group hidden" id="modalImageContainer">
-            <img id="modalImage" src="" alt="Imagen detalle" class="w-full h-48 sm:h-64 object-cover">
-            <!-- Botón de Zoom con color institucional #2b3a62 -->
-            <button onclick="openZoomModal()"
-              class="absolute bottom-3 right-3 bg-[#2b3a62] hover:bg-blue-900 text-white p-2 rounded-full transition-all duration-300 shadow-xl flex items-center justify-center transform hover:scale-110 z-10 opacity-90 hover:opacity-100">
-              <span class="material-icons">zoom_in</span>
-            </button>
-            <!-- Navigation Arrows -->
-            <button onclick="navigateModal(-1)" class="modal-prev-btn absolute left-2 top-1/2 -translate-y-1/2 bg-[#2b3a62] hover:bg-blue-900 text-white p-1 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-all transform hover:scale-110 flex items-center justify-center z-10">
-                <span class="material-icons">chevron_left</span>
-            </button>
-            <button onclick="navigateModal(1)" class="modal-next-btn absolute right-2 top-1/2 -translate-y-1/2 bg-[#2b3a62] hover:bg-blue-900 text-white p-1 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-all transform hover:scale-110 flex items-center justify-center z-10">
-                <span class="material-icons">chevron_right</span>
-            </button>
-          </div>
-
-          <!-- Contenedores para Media Incrustada (Iframes & Videos) -->
-          <div class="relative hidden bg-gray-100 border-b border-gray-200" id="modalEmbedContainer">
-            <div class="relative w-full" style="height: 60vh; min-height: 350px;">
-              <iframe id="modalIframe" src="" class="absolute inset-0 w-full h-full border-0" allowfullscreen allow="autoplay"></iframe>
-              <!-- Navigation Arrows -->
-              <button onclick="navigateModal(-1)" class="modal-prev-btn absolute left-2 top-1/2 -translate-y-1/2 bg-[#2b3a62] hover:bg-blue-900 text-white p-1 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-all transform hover:scale-110 flex items-center justify-center z-10 pointer-events-auto">
-                  <span class="material-icons">chevron_left</span>
-              </button>
-              <button onclick="navigateModal(1)" class="modal-next-btn absolute right-2 top-1/2 -translate-y-1/2 bg-[#2b3a62] hover:bg-blue-900 text-white p-1 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-all transform hover:scale-110 flex items-center justify-center z-10 pointer-events-auto">
-                  <span class="material-icons">chevron_right</span>
-              </button>
-            </div>
-          </div>
-          <div class="relative hidden bg-black" id="modalVideoContainer">
-            <div class="relative w-full" style="height: 60vh; min-height: 350px;">
-              <video id="modalVideo" controls class="absolute inset-0 w-full h-full object-contain">
-                <source src="" type="video/mp4">
-                Tu navegador no soporta videos HTML5.
-              </video>
-              <!-- Navigation Arrows -->
-              <button onclick="navigateModal(-1)" class="modal-prev-btn absolute left-2 top-1/2 -translate-y-1/2 bg-[#2b3a62] hover:bg-blue-900 text-white p-1 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-all transform hover:scale-110 flex items-center justify-center z-10 pointer-events-auto">
-                  <span class="material-icons">chevron_left</span>
-              </button>
-              <button onclick="navigateModal(1)" class="modal-next-btn absolute right-2 top-1/2 -translate-y-1/2 bg-[#2b3a62] hover:bg-blue-900 text-white p-1 rounded-full shadow-lg opacity-80 hover:opacity-100 transition-all transform hover:scale-110 flex items-center justify-center z-10 pointer-events-auto">
-                  <span class="material-icons">chevron_right</span>
-              </button>
-            </div>
-          </div>                    </div>
+                    <!-- Contenedor de Imagen con Botón Zoom -->
+                    <div class="relative group hidden" id="modalImageContainer">
+                        <img id="modalImage" src="" alt="Imagen detalle" class="w-full h-48 sm:h-64 object-cover">
+                        <!-- Botón de Zoom con color institucional #2b3a62 -->
+                        <button onclick="openZoomModal()"
+                            class="absolute bottom-3 right-3 bg-[#2b3a62] hover:bg-blue-900 text-white p-2 rounded-full transition-all duration-300 shadow-xl flex items-center justify-center transform hover:scale-110 z-10 opacity-90 hover:opacity-100">
+                            <span class="material-icons">zoom_in</span>
+                        </button>
+                    </div>
                     <div class="p-6 space-y-4">
-                        <!-- Top row: CTA button (left) + Date (right) -->
-                        <div class="flex items-center justify-between gap-3">
-                            <a id="modalLink" href="#" target="_blank"
-                                class="hidden items-center gap-2 px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider text-white bg-aesa-blue hover:bg-blue-900 shadow-md hover:shadow-xl transition-all duration-300 cta-click shrink-0">
-                                <span class="material-icons text-sm" id="modalLinkIcon">ads_click</span>
-                                <span id="modalLinkText">CLICK AQUI</span>
-                            </a>
-                            <div class="flex items-center gap-1.5 text-gray-400 text-xs font-medium uppercase tracking-wider ml-auto">
-                                <span class="material-icons text-sm">calendar_today</span>
-                                <span id="modalDate">...</span>
-                            </div>
+                        <div
+                            class="flex items-center gap-2 text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">
+                            <span class="material-icons text-sm">calendar_today</span>
+                            <span id="modalDate">...</span>
                         </div>
-
-                        <!-- Short Description -->
-                        <div id="modalShortDescContainer" class="hidden bg-blue-50 border-l-4 border-[#2b3a62] rounded-r-lg px-4 py-3">
-                            <p id="modalShortDesc" class="text-sm text-gray-700 leading-relaxed italic"></p>
-                        </div>
-
                         <div>
                             <h4 class="text-sm font-bold text-aesa-dark uppercase tracking-wide mb-2">Descripción</h4>
                             <div class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                                 <div id="modalDescription" class="text-gray-600 text-sm leading-relaxed"></div>
                             </div>
-
-                            <!-- Contenedores para Media Incrustada (Iframes & Videos) -->
-                            <div class="relative hidden bg-gray-100 border border-gray-200 mt-4 rounded-lg overflow-hidden shadow-md"
-                                id="modalEmbedContainer">
-                                <div class="relative w-full" style="height: 60vh; min-height: 350px;">
-                                    <iframe id="modalIframe" src="" class="absolute inset-0 w-full h-full border-0"
-                                        allowfullscreen allow="autoplay"></iframe>
-                                </div>
-                            </div>
-                            <div class="relative hidden bg-black mt-4 rounded-lg overflow-hidden shadow-md"
-                                id="modalVideoContainer">
-                                <div class="relative w-full" style="height: 60vh; min-height: 350px;">
-                                    <video id="modalVideo" controls
-                                        class="absolute inset-0 w-full h-full object-contain">
-                                        <source src="" type="video/mp4">
-                                        Tu navegador no soporta videos HTML5.
-                                    </video>
-                                </div>
-                            </div>
+                            <a id="modalLink" href="#" target="_blank"
+                                class="hidden mt-4 w-full sm:w-auto justify-center items-center gap-2 px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider text-white bg-aesa-blue hover:bg-blue-900 shadow-md hover:shadow-xl transition-all duration-300 cta-click">
+                                <span class="material-icons text-sm">ads_click</span>
+                                CLICK AQUI
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -556,19 +493,19 @@
             {
                 "TITULO": "Protocolo de Seguridad en Socavón",
                 "CATEGORIA": "Comunicado",
-                "DESCRIPCION_CORTA": "Prueba visualizador PDF incrustado desde Google Drive",
+                "DESCRIPCION_CORTA": "Actualización de medidas de emergencia para el nivel 4.",
                 "LINK_FOTO": "https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&q=80&w=1200",
                 "FECHA": "2024-10-25",
-                "LINK_INFORMACION": "https://drive.google.com/file/d/1Oe_GZWEhKV0KOaAAy6yxtT5J-PwS08Ch/view",
+                "LINK_INFORMACION": "https://example.com/pdf",
                 "ORDEN": 1
             },
             {
                 "TITULO": "Mantenimiento Preventivo Jumbos",
                 "CATEGORIA": "Mantenimiento",
-                "DESCRIPCION_CORTA": "Video Appsheet incrustado de prueba.",
+                "DESCRIPCION_CORTA": "Guía de revisión técnica diaria.",
                 "LINK_FOTO": "",
                 "FECHA": "2024-10-20",
-                "LINK_INFORMACION": "https://www.appsheet.com/template/gettablefileurl?appName=AESA-CL-63567360&tableName=11_PAC_TEMAS&fileName=%2F13_WEB%2FVIDEOS%2F2026%2F2026_FEBRERO_ALTURA%2F2026_FEBRERO_ALTURA.LINK_FILE_VIDEO.040853.mp4",
+                "LINK_INFORMACION": "",
                 "ORDEN": 2
             },
             {
@@ -578,15 +515,15 @@
                 "DESCRIPCION_LARGA": "<table><thead><tr><th>Título</th><th>Examen</th><th>Presentación</th><th>Video</th></tr></thead><tbody><tr><td><strong>Prevención y protección contra incendios</strong></td><td><a href=\"https://forms.gle/yXzQsCutkTcsdi9c6\" target=\"_blank\">Rendir</a></td><td><a href=\"https://forms.gle/yXzQsCutkTcsdi9c6\" target=\"_blank\">Ver</a></td><td><a href=\"https://www.appsheet.com/template/gettablefileurl?appName=AESA-CL-63567360&tableName=11_PAC_TEMAS&fileName=%2F13_WEB%2FVIDEOS%2F2026%2F2026_FEBRERO_INCENDIOS%2F2026_FEBRERO_INCENDIOS.LINK_FILE_VIDEO.033739.mp4\" target=\"_blank\">Ver</a></td></tr></tbody></table>",
                 "FECHA": "2026-02-21",
                 "LINK_INFORMACION": "",
-                "ORDEN": 3
+                "ORDEN": 1
             },
             {
-                "TITULO": "Instructivo Avanzado YouTube",
+                "TITULO": "Instructivo Avanzado 1000",
                 "CATEGORIA": "Inspecciones",
-                "DESCRIPCION_CORTA": "Prueba de video de YouTube",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el instructivo de prueba número 1000.",
                 "LINK_FOTO": "https://picsum.photos/seed/1000/600/300",
                 "FECHA": "2026-02-23",
-                "LINK_INFORMACION": "https://www.youtube.com/watch?v=s7nbk6zq5yA",
+                "LINK_INFORMACION": "#",
                 "ORDEN": 10
             },
             {
@@ -2374,8 +2311,13 @@
             {
                 "TITULO": "Guía Ambiental 1199",
                 "CATEGORIA": "PETS",
+                "DESCRIPCION_CORTA": "Descripción corta autogenerada para el guía de prueba número 1199.",
+                "LINK_FOTO": "https://picsum.photos/seed/1199/600/300",
+                "FECHA": "2026-02-23",
+                "LINK_INFORMACION": "#",
                 "ORDEN": 209
-            }];
+            }
+        ];
 
         const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?auto=format&fit=crop&q=80&w=800";
         const CATEGORY_TITLE_TEXT_SIZE = "text-lg"; // e.g. text-lg, text-xl, text-2xl
@@ -2390,7 +2332,6 @@
         let searchTimeout = null;
         let currentCategoryItems = [];
         let displayedItemsCount = 0;
-        let currentModalIndex = -1;
         const ITEMS_PER_PAGE = 12;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -2673,45 +2614,7 @@
 
         function openModal(item) {
             const modal = document.getElementById('modal'); const cont = document.getElementById('modalContainer');
-            
-            // Calculate current index for navigation
-            currentModalIndex = currentCategoryItems.findIndex(i => i.TITULO === item.TITULO && i.ORDEN === item.ORDEN);
-            
-            // Update navigation arrows visibility
-            const prevBtns = document.querySelectorAll('.modal-prev-btn');
-            const nextBtns = document.querySelectorAll('.modal-next-btn');
-            
-            prevBtns.forEach(btn => {
-                if (currentModalIndex <= 0) {
-                    btn.classList.add('hidden');
-                } else {
-                    btn.classList.remove('hidden');
-                }
-            });
-            
-            nextBtns.forEach(btn => {
-                if (currentModalIndex === -1 || currentModalIndex >= currentCategoryItems.length - 1) {
-                    btn.classList.add('hidden');
-                } else {
-                    btn.classList.remove('hidden');
-                }
-            });
-
             document.getElementById('modalTitle').textContent = item.TITULO;
-
-            // Short Description
-            const shortDescContainer = document.getElementById('modalShortDescContainer');
-            const shortDescEl = document.getElementById('modalShortDesc');
-            if (shortDescContainer && shortDescEl) {
-                const shortDesc = (item.DESCRIPCION_CORTA || '').trim();
-                if (shortDesc) {
-                    shortDescEl.textContent = shortDesc;
-                    shortDescContainer.classList.remove('hidden');
-                } else {
-                    shortDescContainer.classList.add('hidden');
-                }
-            }
-
             let rawDesc = item.DESCRIPCION_LARGA || item.DESCRIPCION_CORTA || "Sin descripción.";
             const modalDescription = sanitizeHTML(String(rawDesc));
             const descEl = document.getElementById('modalDescription');
@@ -2962,150 +2865,22 @@
                 descEl.textContent = modalDescription;
             }
             document.getElementById('modalDate').textContent = item.FECHA || "N/A";
-
-            // --- Lógica del Visor (PDF, YouTube, MP4 y Enlaces Externos) ---
             const linkBtn = document.getElementById('modalLink');
-            const linkIcon = document.getElementById('modalLinkIcon');
-            const linkText = document.getElementById('modalLinkText');
-
-            const embedContainer = document.getElementById('modalEmbedContainer');
-            const modalIframe = document.getElementById('modalIframe');
-            const videoContainer = document.getElementById('modalVideoContainer');
-            const modalVideo = document.getElementById('modalVideo');
-
-            // Reiniciar estado
-            embedContainer.classList.add('hidden');
-            videoContainer.classList.add('hidden');
-            modalIframe.src = "";
-            modalVideo.pause();
-            modalVideo.querySelector('source').src = "";
-            modalVideo.load();
-            linkBtn.classList.add('hidden');
-            linkBtn.classList.remove('inline-flex');
-
-            let url = (item.LINK_INFORMACION || "").trim();
-
-            if (url && url !== "#") {
-                linkBtn.href = url;
-                let isMediaIncrustada = false;
-
-                // 1. Detección de PDF local o enlace terminando en .pdf
-                if (url.toLowerCase().endsWith('.pdf')) {
-                    modalIframe.src = url;
-                    embedContainer.classList.remove('hidden');
-                    isMediaIncrustada = true;
-                }
-                // 2. Detección de PDF de Google Drive
-                else if (url.includes('drive.google.com/file/d/')) {
-                    // Convertir view a preview para que se pueda incrustar en un iframe
-                    let urlPreview = url;
-                    if (url.includes('/view')) {
-                        urlPreview = url.replace(/\/view.*$/, '/preview');
-                    } else if (!url.includes('/preview')) {
-                        urlPreview = url + '/preview';
-                    }
-                    modalIframe.src = urlPreview;
-                    embedContainer.classList.remove('hidden');
-                    isMediaIncrustada = true;
-                }
-                // 3. Detección de YouTube
-                else if (url.includes('youtube.com') || url.includes('youtu.be')) {
-                    const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-                    const match = url.match(ytRegex);
-                    let videoId = match ? match[1] : null;
-
-                    if (videoId) {
-                        modalIframe.src = `https://www.youtube.com/embed/${videoId}`;
-                        embedContainer.classList.remove('hidden');
-                        isMediaIncrustada = true;
-                    }
-                }
-                // 4. Detección de Video MP4 nativo o AppSheet Video URL
-                else if (/\.(mp4|webm|ogg)(?:[?#].*)?$/i.test(url) || url.includes('appsheet.com/template/gettablefileurl')) {
-                    modalVideo.querySelector('source').src = url;
-                    modalVideo.load();
-                    videoContainer.classList.remove('hidden');
-                    isMediaIncrustada = true;
-                }
-
-                // Configurar el botón de enlace externo (siempre disponible como alternativa)
-                linkBtn.classList.remove('hidden');
-                linkBtn.classList.add('inline-flex');
-
-                if (isMediaIncrustada) {
-                    linkIcon.textContent = "open_in_new";
-                    linkText.textContent = "ABRIR EN PESTAÑA";
-                } else {
-                    linkIcon.textContent = "ads_click";
-                    linkText.textContent = "CLICK AQUI";
-                }
-            }
-
-            // Ocultar la imagen destacada si hay medio incrustado para ganar espacio
+            if (item.LINK_INFORMACION && item.LINK_INFORMACION !== "#") { linkBtn.classList.remove('hidden'); linkBtn.classList.add('inline-flex'); linkBtn.href = item.LINK_INFORMACION; } else { linkBtn.classList.add('hidden'); linkBtn.classList.remove('inline-flex'); }
             const imgContainer = document.getElementById('modalImageContainer');
-            const img = document.getElementById('modalImage');
-            img.src = item.LINK_FOTO || FALLBACK_IMAGE;
-
-            if (videoContainer.classList.contains('hidden') && embedContainer.classList.contains('hidden')) {
-                if (imgContainer) imgContainer.classList.remove('hidden');
-                else img.classList.remove('hidden');
-            } else {
-                if (imgContainer) imgContainer.classList.add('hidden');
-                else img.classList.add('hidden');
-            }
-
+            const img = document.getElementById('modalImage'); img.src = item.LINK_FOTO || FALLBACK_IMAGE;
+            if (imgContainer) { imgContainer.classList.remove('hidden'); } else { img.classList.remove('hidden'); }
             modal.classList.remove('hidden'); setTimeout(() => cont.classList.remove('scale-95'), 10);
         }
-
-        // Función global para manejar navegación con flechas del modal
-        function navigateModal(direction) {
-            if (currentModalIndex === -1 || currentCategoryItems.length === 0) return;
-            const newIndex = currentModalIndex + direction;
-            if (newIndex >= 0 && newIndex < currentCategoryItems.length) {
-                // Pause any playing media before switching
-                const pacVideo = document.querySelector('#modalDescription .pac-inline-video');
-                if (pacVideo) pacVideo.pause();
-
-                const modalIframe = document.getElementById('modalIframe');
-                if (modalIframe) modalIframe.src = "";
-
-                const modalVideo = document.getElementById('modalVideo');
-                if (modalVideo) {
-                    modalVideo.pause();
-                    modalVideo.querySelector('source').src = "";
-                    modalVideo.load();
-                }
-                
-                openModal(currentCategoryItems[newIndex]);
-            }
-        }
-
         function closeModal() {
             const modal = document.getElementById('modal');
             const cont = document.getElementById('modalContainer');
-
-            // Pausar video de la tabla PAC
             const pacVideo = document.querySelector('#modalDescription .pac-inline-video');
             if (pacVideo) {
                 pacVideo.pause();
                 pacVideo.removeAttribute('src');
                 pacVideo.load();
             }
-
-            // Detener el iframe (especialmente si es YouTube)
-            const modalIframe = document.getElementById('modalIframe');
-            if (modalIframe) {
-                modalIframe.src = "";
-            }
-
-            // Pausar y resetear reproductor de video interno
-            const modalVideo = document.getElementById('modalVideo');
-            if (modalVideo) {
-                modalVideo.pause();
-                modalVideo.querySelector('source').src = "";
-                modalVideo.load();
-            }
-
             cont.classList.add('scale-95');
             setTimeout(() => modal.classList.add('hidden'), 200);
         }
@@ -3265,132 +3040,6 @@
                     document.body.style.overflow = '';
                 }, 300);
             }
-        }
-    </script>
-    <!-- Botón Flotante de Feedback -->
-    <button onclick="openFeedbackModal()" class="fixed bottom-6 right-6 bg-[#2b3a62] hover:bg-blue-900 text-white p-4 rounded-full shadow-2xl z-[60] flex items-center gap-2 transform hover:scale-105 transition-all duration-300 group">
-        <span class="material-icons">feedback</span>
-        <span class="font-bold text-sm hidden group-hover:inline-block max-w-0 group-hover:max-w-xs transition-all duration-500 overflow-hidden whitespace-nowrap">Mejoras</span>
-    </button>
-
-    <!-- Modal de Feedback -->
-    <div id="feedbackModal" class="fixed inset-0 bg-black/60 z-[80] hidden items-center justify-center p-4 transition-opacity duration-300 backdrop-blur-sm flex opacity-0">
-        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl transform transition-all scale-95" id="feedbackContainer">
-            <!-- Encabezado -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-100 bg-[#2b3a62] rounded-t-2xl text-white">
-                <div class="flex items-center gap-3">
-                    <span class="material-icons text-2xl">lightbulb</span>
-                    <h3 class="text-xl font-bold tracking-wide">Buzón de Mejoras</h3>
-                </div>
-                <button onclick="closeFeedbackModal()" class="text-white/70 hover:text-white rounded-full p-1 transition-colors bg-white/10 hover:bg-white/20">
-                    <span class="material-icons">close</span>
-                </button>
-            </div>
-
-            <!-- Contenido -->
-            <div class="p-6">
-                <p class="text-sm text-gray-600 mb-4 leading-relaxed">
-                    ¡Tu opinión es muy importante! Ayúdanos a mejorar la plataforma enviando tus sugerencias, reportando algún problema o compartiendo ideas nuevas.
-                </p>
-                <textarea id="feedbackText" rows="4" placeholder="Escribe tu mensaje aquí..."
-                    class="w-full p-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-[#2b3a62] focus:ring-4 focus:ring-blue-900/10 transition-all text-sm resize-none custom-scrollbar"></textarea>
-            </div>
-
-            <!-- Botones de Acción -->
-            <div class="p-6 pt-2 bg-gray-50 border-t border-gray-100 rounded-b-2xl flex justify-end gap-3">
-                <button onclick="closeFeedbackModal()" class="px-5 py-2.5 rounded-lg text-gray-600 font-bold text-sm hover:bg-gray-200 transition-colors">
-                    Cancelar
-                </button>
-                <button id="submitFeedbackBtn" onclick="submitFeedback()" class="px-5 py-2.5 rounded-lg bg-[#2b3a62] hover:bg-blue-900 text-white font-bold text-sm shadow-md flex items-center gap-2 transition-all">
-                    <span class="material-icons text-sm" id="feedbackIconBtn">send</span>
-                    <span id="feedbackTextBtn">Enviar Idea</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // --- Funciones de Feedback (Preview) ---
-        function openFeedbackModal() {
-            const modal = document.getElementById('feedbackModal');
-            const container = document.getElementById('feedbackContainer');
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => {
-                modal.classList.add('opacity-100');
-                modal.classList.remove('opacity-0');
-                container.classList.remove('scale-95');
-            }, 10);
-        }
-
-        function closeFeedbackModal() {
-            const modal = document.getElementById('feedbackModal');
-            const container = document.getElementById('feedbackContainer');
-            modal.classList.add('opacity-0');
-            modal.classList.remove('opacity-100');
-            container.classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                document.body.style.overflow = '';
-                document.getElementById('feedbackText').value = '';
-            }, 300);
-        }
-
-        function showToast(message, type = 'success') {
-            let toast = document.getElementById('appToast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'appToast';
-                toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);z-index:9999;min-width:260px;max-width:90vw;padding:14px 20px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.22);opacity:0;transition:all 0.35s cubic-bezier(.4,0,.2,1);pointer-events:none;';
-                document.body.appendChild(toast);
-            }
-            const configs = {
-                success: { bg: '#10b981', icon: 'check_circle' },
-                error:   { bg: '#ef4444', icon: 'error' },
-                warning: { bg: '#f59e0b', icon: 'warning' },
-                info:    { bg: '#2b3a62', icon: 'info' }
-            };
-            const cfg = configs[type] || configs.info;
-            toast.style.background = cfg.bg;
-            toast.innerHTML = `<span class="material-icons" style="font-size:20px;flex-shrink:0">${cfg.icon}</span><span>${message}</span>`;
-            requestAnimationFrame(() => {
-                toast.style.opacity = '1';
-                toast.style.transform = 'translateX(-50%) translateY(0)';
-            });
-            clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(-50%) translateY(20px)';
-            }, 3500);
-        }
-
-        function submitFeedback() {
-            const texto = document.getElementById('feedbackText').value.trim();
-            if (texto.length < 5) {
-                showToast('✏️ Por favor escribe un poco más antes de enviar.', 'warning');
-                return;
-            }
-
-            const btn = document.getElementById('submitFeedbackBtn');
-            const icon = document.getElementById('feedbackIconBtn');
-            const label = document.getElementById('feedbackTextBtn');
-
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-            label.textContent = 'Enviando...';
-            icon.textContent = 'sync';
-            icon.classList.add('animate-spin');
-
-            // Simulación en Preview
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                label.textContent = 'Enviar Idea';
-                icon.textContent = 'send';
-                icon.classList.remove('animate-spin');
-                showToast('¡Gracias! Tu idea fue enviada correctamente. 🎉', 'success');
-                closeFeedbackModal();
-            }, 1500);
         }
     </script>
 </body>

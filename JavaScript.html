@@ -1,4 +1,4 @@
-﻿<script>
+<script>
   // --- Config ---
   const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1518623489648-a173ef7824f3?auto=format&fit=crop&q=80&w=800"; // Generic Industrial
   const EMERGENCY_IMAGE_URL = 'https://lh3.googleusercontent.com/d/1S4WjOgDQKLdOxyrZPr4WFbq-MPv-OVXT'; // Imagen del flujo de emergencia
@@ -188,7 +188,11 @@
       const slide = document.createElement('div');
       slide.className = `absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${isHidden}`;
       slide.dataset.index = index;
-      slide.onclick = () => openModal(item);
+      // Set comunicados into currentCategoryItems for navigation
+      slide.onclick = () => {
+        window.currentCategoryItems = items;
+        openModal(item);
+      };
 
       slide.innerHTML = `
                  <div class="relative w-full h-full cursor-pointer">
@@ -214,6 +218,8 @@
                     </div>
                 </div>
             `;
+      // Store current comunicado index for navigation
+      slide.dataset.itemIndex = index;
       innerContainer.appendChild(slide);
 
       // Indicator
@@ -350,8 +356,8 @@
 
     document.getElementById('currentCategoryTitle').textContent = categoryName;
 
-    currentCategoryItems = groupedData[categoryName] || [];
-    displayedItemsCount = 0;
+    window.currentCategoryItems = groupedData[categoryName] || [];
+    window.displayedItemsCount = 0;
     const grid = document.getElementById('cardsGrid');
     grid.innerHTML = '';
 
@@ -374,21 +380,21 @@
     const grid = document.getElementById('cardsGrid');
     const loadMoreContainer = document.getElementById('loadMoreContainer');
 
-    const nextItems = currentCategoryItems.slice(displayedItemsCount, displayedItemsCount + ITEMS_PER_PAGE);
+    const nextItems = window.currentCategoryItems.slice(window.displayedItemsCount, window.displayedItemsCount + ITEMS_PER_PAGE);
 
     nextItems.forEach((item, index) => {
       const card = createCard(item);
       card.classList.add('card-anim');
-      card.style.animationDelay = `${index * 0.05} s`;
+      card.style.animationDelay = `${index * 0.05}s`;
       grid.appendChild(card);
     });
 
-    displayedItemsCount += nextItems.length;
+    window.displayedItemsCount += nextItems.length;
 
-    if (displayedItemsCount >= currentCategoryItems.length) {
+    if (window.displayedItemsCount >= window.currentCategoryItems.length) {
       loadMoreContainer.innerHTML = ''; // Hide button if all elements are shown
     } else {
-      loadMoreContainer.innerHTML = `< button onclick = "loadMoreItems()" class="bg-gray-100/50 hover:bg-gray-200/80 text-aesa-blue font-bold px-8 py-2.5 rounded-full border-2 border-aesa-blue transition-colors duration-300 shadow-md transform hover:scale-105" > Cargar más documentos...</button > `;
+      loadMoreContainer.innerHTML = `<button onclick="loadMoreItems()" class="bg-gray-100/50 hover:bg-gray-200/80 text-aesa-blue font-bold px-8 py-2.5 rounded-full border-2 border-aesa-blue transition-colors duration-300 shadow-md transform hover:scale-105">Cargar más documentos...</button>`;
     }
   }
 
@@ -424,7 +430,7 @@
     }
 
     div.innerHTML = `
-    < div class= "h-28 overflow-hidden relative bg-gray-100" >
+    <div class="h-28 overflow-hidden relative bg-gray-100">
                 <img src="${imgUrl}" alt="${item.TITULO}" loading="lazy" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.src='${FALLBACK_IMAGE}'">
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300"></div>
             </div>
@@ -463,10 +469,10 @@
 
     if (term === '') {
       resultsContainer.innerHTML = `
-      < div class= "col-span-full text-center text-gray-500 mt-20" >
+      <div class="col-span-full text-center text-gray-500 mt-20">
                 <span class="material-icons text-6xl mb-4 opacity-50">manage_search</span>
                 <p class="text-xl">Escribe para comenzar a buscar...</p>
-            </div >
+            </div>
       `;
       return;
     }
@@ -495,11 +501,11 @@
 
     if (foundCount === 0) {
       resultsContainer.innerHTML = `
-    < div class= "col-span-full text-center text-gray-500 mt-20" >
+    <div class="col-span-full text-center text-gray-500 mt-20">
                 <span class="material-icons text-6xl mb-4 opacity-50">search_off</span>
                 <p class="text-xl">No se encontraron resultados para "${term}"</p>
                 <p class="text-sm mt-2">Intenta con otros términos.</p>
-            </div >
+            </div>
       `;
     }
   }
@@ -544,11 +550,21 @@
       const parser = new DOMParser();
       const doc = parser.parseFromString(value, 'text/html');
       const tableEl = doc.querySelector('table');
+
+      const hasPlayableExtension = (url) => /\.(mp4|webm|ogg|m4v|mov)(?:[?#].*)?$/i.test(String(url || '').trim());
+
       if (tableEl) {
         const rows = tableEl.querySelectorAll('tbody tr');
         rows.forEach((row) => {
           const cells = row.querySelectorAll('td');
-          // Col 1: Examen, Col 2: Presentacion, Col 3: Video
+          const getUrlFromCell = (cell) => {
+            if (!cell) return '';
+            const existingAnchor = cell.querySelector('a[href]');
+            if (existingAnchor) return String(existingAnchor.getAttribute('href') || existingAnchor.href || '').trim();
+            const raw = String(cell.textContent || '').trim();
+            const match = raw.match(/https?:\/\/[^\s<>"']+/i);
+            return match ? match[0].trim() : '';
+          };
           const map = [
             { idx: 1, cls: 'btn-examen', label: 'Rendir' },
             { idx: 2, cls: 'btn-presentacion', label: 'Ver' },
@@ -557,84 +573,144 @@
           map.forEach(({ idx, cls, label }) => {
             const cell = cells[idx];
             if (!cell) return;
-            const anchor = cell.querySelector('a');
-            if (!anchor) return;
+            const url = getUrlFromCell(cell);
+            if (!url) {
+              cell.textContent = 'Sin enlace';
+              cell.classList.add('pac-empty-link');
+              return;
+            }
+            let anchor = cell.querySelector('a');
+            if (!anchor) {
+              anchor = document.createElement('a');
+              cell.textContent = '';
+              cell.appendChild(anchor);
+            }
             anchor.classList.remove('btn-examen', 'btn-presentacion', 'btn-video');
             anchor.classList.add('btn', cls);
             anchor.textContent = label;
-            anchor.setAttribute('target', '_blank');
-            anchor.setAttribute('rel', 'noopener noreferrer');
+            anchor.href = url;
+            if (cls === 'btn-video') {
+              anchor.removeAttribute('target');
+              anchor.removeAttribute('rel');
+            } else {
+              anchor.setAttribute('target', '_blank');
+              anchor.setAttribute('rel', 'noopener noreferrer');
+            }
+          });
+        });
+
+        tableEl.className = 'w-full border-collapse bg-white rounded-xl overflow-hidden shadow-lg mt-0 table-fixed';
+        const thead = tableEl.querySelector('thead');
+        if (thead) thead.className = 'bg-[#1f2937] text-white';
+        tableEl.querySelectorAll('th').forEach(th => {
+          th.className = 'px-2 py-2 text-center text-[11px] font-semibold uppercase tracking-wide';
+        });
+        tableEl.querySelectorAll('tbody tr').forEach(row => {
+          row.className = 'transition-colors duration-200 hover:bg-gray-50 border-b border-gray-100 last:border-0';
+          row.querySelectorAll('td').forEach((cell, idx) => {
+            cell.className = 'px-2 py-2 text-[12px] text-gray-700 align-middle text-center border-b border-gray-100 last:border-0 break-words';
+            if (idx === 0) {
+              cell.className = 'px-2 py-2 text-[12px] font-semibold text-gray-900 align-middle text-left border-b border-gray-100 last:border-0 break-words';
+            }
+            const btn = cell.querySelector('.btn');
+            if (btn) btn.className = btn.className + ' pac-btn';
           });
         });
       }
-      const tableHtml = tableEl ? tableEl.outerHTML : (doc.body ? doc.body.innerHTML : value);
 
-      descEl.innerHTML = `
-      < style >
-      #modalDescription.pac - html - content{
-        font- family: 'Segoe UI', Tahoma, Geneva, Verdana, sans - serif;
-    background: linear - gradient(135deg, #f4f6f9, #e9eef5);
-    padding: 8px 10px;
-    border - radius: 12px;
-  }
-  #modalDescription.pac - note{
-    margin: 0 0 6px 0;
-    color:#1f2937;
-    font - weight: 600;
-    font - size: 14px;
-  }
-  #modalDescription.pac - table - container{
-    max - width: 100 %;
-    margin: auto;
-    overflow - x: auto;
-  }
-  #modalDescription.pac - table - container table{
-    width: 100 %;
-    border - collapse: collapse;
-    background: #fff;
-    border - radius: 12px;
-    overflow: hidden;
-    box - shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    margin - top: 0;
-  }
-  #modalDescription.pac - table - container thead{
-    background:#1f2937;
-    color: #fff;
-  }
-  #modalDescription.pac - table - container th,
-    #modalDescription.pac - table - container td{
-    padding: 12px;
-    text - align: center;
-    font - size: 13px;
-  }
-  #modalDescription.pac - table - container tbody tr{
-    transition: 0.3s ease;
-  }
-  #modalDescription.pac - table - container tbody tr:hover{
-    background: #f3f4f6;
-  }
-  #modalDescription.pac - table - container.btn{
-    display: inline - block;
-    padding: 7px 12px;
-    border - radius: 8px;
-    text - decoration: none;
-    font - weight: 600;
-    font - size: 12px;
-    color: #fff;
-    transition: 0.3s ease;
-  }
-  #modalDescription.pac - table - container.btn - examen{ background:#2563eb; }
-  #modalDescription.pac - table - container.btn - examen:hover{ background:#1d4ed8; }
-  #modalDescription.pac - table - container.btn - presentacion{ background:#10b981; }
-  #modalDescription.pac - table - container.btn - presentacion:hover{ background:#059669; }
-  #modalDescription.pac - table - container.btn - video{ background: #f59e0b; }
-  #modalDescription.pac - table - container.btn - video:hover{ background: #d97706; }
-        </style >
-    <div class="pac-html-content">
-      <p class="pac-note">A continuación las capacitaciones del mes:</p>
-      <div class="pac-table-container">${tableHtml}</div>
-    </div>
-  `;
+      descEl.innerHTML = '';
+      const styleTag = document.createElement('style');
+      styleTag.textContent = `
+        #modalDescription .pac-html-content{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#f4f6f9,#e9eef5);padding:8px;border-radius:12px;}
+        #modalDescription .pac-note{margin:0 0 6px 0;color:#1f2937;font-weight:600;font-size:14px;}
+        #modalDescription .pac-table-container{max-width:100%;margin:auto;overflow-x:hidden;}
+        #modalDescription .pac-table-container table{width:100%;table-layout:fixed;}
+        #modalDescription .pac-table-container th:nth-child(1),#modalDescription .pac-table-container td:nth-child(1){width:46%;}
+        #modalDescription .pac-table-container th:nth-child(2),#modalDescription .pac-table-container td:nth-child(2){width:18%;}
+        #modalDescription .pac-table-container th:nth-child(3),#modalDescription .pac-table-container td:nth-child(3){width:18%;}
+        #modalDescription .pac-table-container th:nth-child(4),#modalDescription .pac-table-container td:nth-child(4){width:18%;}
+        #modalDescription .pac-table-container th,#modalDescription .pac-table-container td{overflow-wrap:anywhere;word-break:break-word;}
+        #modalDescription .pac-empty-link{color:#94a3b8 !important;font-size:11px !important;font-weight:600;font-style:italic;}
+        #modalDescription .btn{display:inline-flex;justify-content:center;align-items:center;width:100%;min-width:0;padding:6px 6px;border-radius:8px;text-decoration:none;font-weight:600;font-size:11px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;transition:0.3s ease;}
+        #modalDescription .pac-btn{text-align:center;}
+        #modalDescription .btn-examen{background:#2563eb;} #modalDescription .btn-examen:hover{background:#1d4ed8;}
+        #modalDescription .btn-presentacion{background:#10b981;} #modalDescription .btn-presentacion:hover{background:#059669;}
+        #modalDescription .btn-video{background:#f59e0b;} #modalDescription .btn-video:hover{background:#d97706;}
+        #modalDescription .pac-video-hint{margin:10px 2px 6px;font-size:12px;color:#334155;font-weight:600;}
+        #modalDescription .pac-inline-video{width:100%;margin-top:8px;border-radius:10px;background:#000;box-shadow:0 10px 25px rgba(15,23,42,0.25);aspect-ratio:16/9;}
+        @media(max-width:640px){
+          #modalDescription .pac-html-content{padding:6px;}
+          #modalDescription .pac-table-container th,#modalDescription .pac-table-container td{padding:6px 4px;font-size:10px;}
+          #modalDescription .btn{padding:5px 4px;font-size:10px;}
+          #modalDescription .pac-table-container th:nth-child(1),#modalDescription .pac-table-container td:nth-child(1){width:43%;}
+          #modalDescription .pac-table-container th:nth-child(2),#modalDescription .pac-table-container td:nth-child(2){width:19%;}
+          #modalDescription .pac-table-container th:nth-child(3),#modalDescription .pac-table-container td:nth-child(3){width:19%;}
+          #modalDescription .pac-table-container th:nth-child(4),#modalDescription .pac-table-container td:nth-child(4){width:19%;}
+        }
+      `;
+      descEl.appendChild(styleTag);
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'pac-html-content';
+      const note = document.createElement('p');
+      note.className = 'pac-note';
+      note.textContent = 'A continuación las capacitaciones del mes:';
+      wrapper.appendChild(note);
+
+      const tableContainer = document.createElement('div');
+      tableContainer.className = 'pac-table-container';
+      if (tableEl) {
+        tableContainer.appendChild(tableEl);
+      } else if (doc.body) {
+        tableContainer.innerHTML = doc.body.innerHTML;
+      } else {
+        tableContainer.innerHTML = value;
+      }
+      wrapper.appendChild(tableContainer);
+
+      if (tableEl) {
+        const pacVideoHint = document.createElement('p');
+        pacVideoHint.className = 'pac-video-hint';
+        pacVideoHint.textContent = "Haz clic en 'Ver' en la columna Video para reproducir aquí.";
+
+        const pacVideo = document.createElement('video');
+        pacVideo.className = 'pac-inline-video hidden';
+        pacVideo.controls = true;
+        pacVideo.preload = 'metadata';
+        pacVideo.playsInline = true;
+        pacVideo.setAttribute('controlsList', 'nodownload');
+        pacVideo.setAttribute('aria-label', 'Video de capacitación PAC');
+
+        tableEl.addEventListener('click', (e) => {
+          const btnVideo = e.target.closest('a.btn-video');
+          if (!btnVideo) return;
+          e.preventDefault();
+          const safeUrl = String(btnVideo.href || '').trim();
+          if (!safeUrl) return;
+          if (!hasPlayableExtension(safeUrl)) {
+            window.open(safeUrl, '_blank', 'noopener,noreferrer');
+            return;
+          }
+          const currentSrc = pacVideo.getAttribute('src') || '';
+          if (currentSrc !== safeUrl) {
+            pacVideo.pause();
+            pacVideo.setAttribute('src', safeUrl);
+            pacVideo.load();
+          }
+          pacVideo.classList.remove('hidden');
+          pacVideoHint.classList.add('hidden');
+          const playPromise = pacVideo.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {});
+          }
+          pacVideo.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        wrapper.appendChild(pacVideoHint);
+        wrapper.appendChild(pacVideo);
+      }
+
+      descEl.appendChild(wrapper);
       return;
     }
 
@@ -658,7 +734,7 @@
 
       // Keep original order of text + HTML as found in body content.
       const bodyContent = doc.body ? doc.body.innerHTML : value;
-      descEl.innerHTML = `< style > ${scopedStyles}</style > <div class="modal-html-content">${bodyContent}</div>`;
+      descEl.innerHTML = `<style>${scopedStyles}</style><div class="modal-html-content">${bodyContent}</div>`;
       return;
     }
 
@@ -670,7 +746,37 @@
     const modal = document.getElementById('modal');
     const modalContent = document.getElementById('modalContainer');
 
+    // Navegación dentro del modal
+    window.currentModalIndex = window.currentCategoryItems.findIndex(i => i.TITULO === item.TITULO && i.ORDEN === item.ORDEN);
+    
+    const prevBtns = document.querySelectorAll('.modal-prev-btn');
+    const nextBtns = document.querySelectorAll('.modal-next-btn');
+
+    prevBtns.forEach(btn => {
+      if (window.currentModalIndex <= 0) btn.classList.add('hidden');
+      else btn.classList.remove('hidden');
+    });
+
+    nextBtns.forEach(btn => {
+      if (window.currentModalIndex === -1 || window.currentModalIndex >= window.currentCategoryItems.length - 1) btn.classList.add('hidden');
+      else btn.classList.remove('hidden');
+    });
+
     document.getElementById('modalTitle').textContent = item.TITULO;
+
+    // Short Description (before full description)
+    const shortDescContainer = document.getElementById('modalShortDescContainer');
+    const shortDescEl = document.getElementById('modalShortDesc');
+    if (shortDescContainer && shortDescEl) {
+      const shortDesc = (item.DESCRIPCION_CORTA || '').trim();
+      if (shortDesc) {
+        shortDescEl.textContent = shortDesc;
+        shortDescContainer.classList.remove('hidden');
+      } else {
+        shortDescContainer.classList.add('hidden');
+      }
+    }
+
     renderDescriptionContent(item.DESCRIPCION_LARGA || item.DESCRIPCION_CORTA, item.CATEGORIA);
     // Category removed
 
@@ -686,26 +792,66 @@
     }
     document.getElementById('modalDate').textContent = dateStr;
 
-    // Link CTA at the end of description
+    // Media detection: embed YouTube/Drive/MP4 from LINK_INFORMACION, else fallback to image
+    const imgContainer = document.getElementById('modalImageContainer');
+    const embedContainer = document.getElementById('modalEmbedContainer');
+    const videoContainer = document.getElementById('modalVideoContainer');
+    const img = document.getElementById('modalImage');
+    const modalIframe = document.getElementById('modalIframe');
+    const modalVideo = document.getElementById('modalVideo');
     const linkBtn = document.getElementById('modalLink');
 
-    if (item.LINK_INFORMACION && item.LINK_INFORMACION !== "#" && item.LINK_INFORMACION.trim() !== "") {
-      linkBtn.classList.remove('hidden');
-      linkBtn.classList.add('inline-flex');
-      linkBtn.href = item.LINK_INFORMACION;
-    } else {
-      linkBtn.classList.add('hidden');
-      linkBtn.classList.remove('inline-flex');
-    }
+    // Reset all media containers
+    if (imgContainer) imgContainer.classList.add('hidden');
+    if (embedContainer) embedContainer.classList.add('hidden');
+    if (videoContainer) videoContainer.classList.add('hidden');
+    if (modalIframe) modalIframe.src = '';
+    if (modalVideo) { modalVideo.pause(); const src = modalVideo.querySelector('source'); if (src) src.src = ''; }
+    if (linkBtn) { linkBtn.classList.add('hidden'); linkBtn.classList.remove('inline-flex'); }
 
-    const imgContainer = document.getElementById('modalImageContainer');
-    const img = document.getElementById('modalImage');
-    const imgUrl = (item.LINK_FOTO && item.LINK_FOTO.toString().trim() !== "") ? item.LINK_FOTO : FALLBACK_IMAGE;
-    img.src = imgUrl;
-    if (imgContainer) {
-      imgContainer.classList.remove('hidden');
+    const linkInfo = (item.LINK_INFORMACION || '').trim();
+
+    const getYouTubeId = (url) => {
+      const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+      return m ? m[1] : null;
+    };
+    const getDriveFileId = (url) => {
+      const m = url.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?id=)([\w-]+)/);
+      return m ? m[1] : null;
+    };
+    const isVideoFile = (url) => /\.(mp4|webm|ogg|m4v|mov)(\?|#|$)/i.test(url);
+
+    const ytId = linkInfo ? getYouTubeId(linkInfo) : null;
+    const driveId = linkInfo ? getDriveFileId(linkInfo) : null;
+    const isVideo = linkInfo ? isVideoFile(linkInfo) : false;
+
+    if (ytId) {
+      // YouTube embed
+      if (modalIframe) modalIframe.src = `https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1`;
+      if (embedContainer) embedContainer.classList.remove('hidden');
+    } else if (driveId) {
+      // Google Drive PDF/Slides embed
+      if (modalIframe) modalIframe.src = `https://drive.google.com/file/d/${driveId}/preview`;
+      if (embedContainer) embedContainer.classList.remove('hidden');
+    } else if (isVideo) {
+      // Direct MP4/video file
+      const src = modalVideo ? modalVideo.querySelector('source') : null;
+      if (src) src.src = linkInfo;
+      if (modalVideo) modalVideo.load();
+      if (videoContainer) videoContainer.classList.remove('hidden');
     } else {
-      img.classList.remove('hidden');
+      // No embeddable media: show image and optionally a CTA button
+      const imgUrl = (item.LINK_FOTO && item.LINK_FOTO.toString().trim() !== '') ? item.LINK_FOTO : FALLBACK_IMAGE;
+      if (img) img.src = imgUrl;
+      if (imgContainer) imgContainer.classList.remove('hidden');
+
+      if (linkInfo && linkInfo !== '#') {
+        if (linkBtn) {
+          linkBtn.classList.remove('hidden');
+          linkBtn.classList.add('inline-flex');
+          linkBtn.href = linkInfo;
+        }
+      }
     }
 
     modal.classList.remove('hidden');
@@ -714,6 +860,19 @@
       modalContent.classList.add('scale-100');
     }, 10);
   }
+
+  // Función global para manejar navegación con flechas del modal
+  window.navigateModal = function(direction) {
+    if (window.currentModalIndex === -1 || window.currentCategoryItems.length === 0) return;
+    const newIndex = window.currentModalIndex + direction;
+    if (newIndex >= 0 && newIndex < window.currentCategoryItems.length) {
+      // Pause any playing media before switching
+      const modalVideo = document.getElementById('modalVideo');
+      if (modalVideo) modalVideo.pause();
+      
+      openModal(window.currentCategoryItems[newIndex]);
+    }
+  };
 
   function closeModal() {
     const modal = document.getElementById('modal');
@@ -988,6 +1147,120 @@
         modal.classList.add('hidden');
         document.body.style.overflow = '';
       }, 300); // 300ms de transición CSS
+    }
+  }
+
+  // --- Funciones de Feedback ---
+  function openFeedbackModal() {
+    const modal = document.getElementById('feedbackModal');
+    const container = document.getElementById('feedbackContainer');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => {
+      modal.classList.add('opacity-100');
+      modal.classList.remove('opacity-0');
+      container.classList.remove('scale-95');
+    }, 10);
+  }
+
+  function closeFeedbackModal() {
+    const modal = document.getElementById('feedbackModal');
+    const container = document.getElementById('feedbackContainer');
+    modal.classList.add('opacity-0');
+    modal.classList.remove('opacity-100');
+    container.classList.add('scale-95');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      document.body.style.overflow = '';
+      document.getElementById('feedbackText').value = '';
+    }, 300);
+  }
+
+  function showToast(message, type = 'success') {
+    let toast = document.getElementById('appToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'appToast';
+      toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);z-index:9999;min-width:260px;max-width:90vw;padding:14px 20px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.22);opacity:0;transition:all 0.35s cubic-bezier(.4,0,.2,1);pointer-events:none;';
+      document.body.appendChild(toast);
+    }
+    const configs = {
+      success: { bg: '#10b981', icon: 'check_circle' },
+      error:   { bg: '#ef4444', icon: 'error' },
+      warning: { bg: '#f59e0b', icon: 'warning' },
+      info:    { bg: '#2b3a62', icon: 'info' }
+    };
+    const cfg = configs[type] || configs.info;
+    toast.style.background = cfg.bg;
+    toast.innerHTML = `<span class="material-icons" style="font-size:20px;flex-shrink:0">${cfg.icon}</span><span>${message}</span>`;
+    // Animate in
+    requestAnimationFrame(() => {
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    // Auto dismiss
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(20px)';
+    }, 3500);
+  }
+
+  function submitFeedback() {
+    const texto = document.getElementById('feedbackText').value.trim();
+    if (texto.length < 5) {
+      showToast('✏️ Por favor escribe un poco más antes de enviar.', 'warning');
+      return;
+    }
+
+    const btn = document.getElementById('submitFeedbackBtn');
+    const icon = document.getElementById('feedbackIconBtn');
+    const label = document.getElementById('feedbackTextBtn');
+
+    // UI state loading
+    btn.disabled = true;
+    btn.classList.add('opacity-50', 'cursor-not-allowed');
+    label.textContent = 'Enviando...';
+    icon.textContent = 'sync';
+    icon.classList.add('animate-spin');
+
+    // Enviar a GAS
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler((response) => {
+          btn.disabled = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+          label.textContent = 'Enviar Idea';
+          icon.textContent = 'send';
+          icon.classList.remove('animate-spin');
+          
+          if (response.status === 'success') {
+            showToast('¡Gracias! Tu idea fue enviada correctamente. 🎉', 'success');
+            closeFeedbackModal();
+          } else {
+            showToast('Hubo un problema al enviar: ' + response.message, 'error');
+          }
+        })
+        .withFailureHandler((err) => {
+          btn.disabled = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+          label.textContent = 'Enviar Idea';
+          icon.textContent = 'send';
+          icon.classList.remove('animate-spin');
+          showToast('Error de conexión. Intenta de nuevo.', 'error');
+        })
+        .saveFeedback(texto);
+    } else {
+      // Caso local (Preview) - Simulamos éxito
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        label.textContent = 'Enviar Idea';
+        icon.textContent = 'send';
+        icon.classList.remove('animate-spin');
+        showToast('¡Gracias! Tu idea fue enviada correctamente. 🎉', 'success');
+        closeFeedbackModal();
+      }, 1500);
     }
   }
 </script>
